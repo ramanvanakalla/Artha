@@ -185,7 +185,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
 
     return (
       <>
-      <div className="mx-32 py-4">
+      <div className="lg:mx-32 lg:py-4">
       <AlertDialog open={this.state.openDeleteDialog}>
         <AlertDialogTrigger>
         </AlertDialogTrigger>
