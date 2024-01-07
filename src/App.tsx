@@ -3,7 +3,6 @@ import Headers from './components/header.tsx'
 import TransactionContainer from './components/transactionContainer.jsx'
 import 'semantic-ui-css/semantic.min.css'
 import { Toaster } from "@/components/ui/sonner"
-import * as ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './components/home.tsx'
 import SplitTransactionContainer from './components/splitTransactionContainer.tsx'
