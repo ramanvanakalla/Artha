@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Profile from './profile';
 
 const Headers = () => {
@@ -7,10 +8,18 @@ const Headers = () => {
               <a className="px-10 py-2 text-center font-semibold font-serif text-xl tracking-widest text-black">Artha</a>
               <div className='flex justify-between w-full'>
                  <ul className='flex flex-col lg:flex-row md:flex-row'>
-                    <li className="px-4 py-2 text-sm text-center text-slate-500 hover:text-black font-sans">Transactions</li>
-                    <li className="px-4 py-2 text-sm text-center text-slate-500 hover:text-black font-sans">Categories</li>
-                    <li className="px-4 py-2 text-sm text-center text-slate-500 hover:text-black font-sans">Friends</li>
-                    <li className="px-4 py-2 text-sm text-center text-slate-500 hover:text-black font-sans">Splits</li>
+                    <li className="px-4 py-2">
+                     <Link to="/transactions" className='text-center text-sm text-slate-500 hover:text-black font-sans'>Transactions</Link>
+                    </li>
+                    <li className="px-4 py-2">
+                     <Link to="/Categories" className='text-center text-sm text-slate-500 hover:text-black font-sans'>Categories</Link>
+                    </li>
+                    <li className="px-4 py-2">
+                     <Link to="/Friends" className='text-center text-sm text-slate-500 hover:text-black font-sans'>Friends</Link>
+                    </li>
+                    <li className="px-4 py-2">
+                     <Link to="/Splits" className='text-center text-sm text-slate-500 hover:text-black font-sans'>Splits</Link>
+                    </li>
                 </ul>
                 <div className='mx-4'>
                   <Profile></Profile>

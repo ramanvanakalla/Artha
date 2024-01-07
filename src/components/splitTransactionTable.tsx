@@ -48,44 +48,46 @@ import { Label } from "@/components/ui/label"
 import { DateTime } from 'luxon';
 import numeral from 'numeral';
 
-interface Transaction {
-  ID: number;
-  Time: string;
+interface SplitTransaction {
+  SplitTransactionId: number;
+  SourceTransactionId: number;
+  SettledTransactionId: number;
   CategoryName: string;
+  SourceAmount: number;
   Amount: number;
-  Description: string;
-  SplitTag: string;
+  FriendName: string;
 }
 
 interface TransactionsProps {
-  transactions: Transaction[];
+  transactions: SplitTransaction[];
   fetchTransactions: ()=> void
 }
 
 interface TransactionsState {
-  splitTransactions: Transaction[];
+  transactions: SplitTransaction[];
   openDeleteDialog: boolean;
   openEditDialog: boolean;
-  currentTransaction: Transaction;
+  currentTransaction: SplitTransaction;
   openDeleteSplitsDialog: boolean
 }
 
 
-class Transactions extends Component<TransactionsProps, TransactionsState> {
+class SplitTransactions extends Component<TransactionsProps, TransactionsState> {
   constructor(props: TransactionsProps) {
     super(props);
     this.state = {
-      splitTransactions: props.transactions,
+      transactions: props.transactions,
       openDeleteDialog: false,
       openEditDialog: false,
       openDeleteSplitsDialog: false,
       currentTransaction: {
-        ID: 0,
-        Time: "", 
+        SplitTransactionId: 0,
+        SourceTransactionId: 0,
+        SettledTransactionId: 0,
         CategoryName: "",
-        Amount: 0, 
-        Description: "",
-        SplitTag: "",
+        SourceAmount: 0,
+        Amount: 0,
+        FriendName: ""
       }
     };
   }
@@ -93,7 +95,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   componentDidUpdate(prevProps: TransactionsProps): void {
     if (prevProps.transactions !== this.props.transactions) {
       // Update state when transactions prop changes
-      this.setState({ splitTransactions: this.props.transactions });
+      this.setState({ transactions: this.props.transactions });
     }
   }
 
@@ -169,17 +171,15 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   }
 
   headers = [
-    "Date",
-    "Time",
+    "Friend",
     "Category",
-    "Amount",
-    "Description",
-    "SplitTag",
+    "Source Amount",
+    "Split Amount",
     "Action"
   ]
 
   render() {
-    if (this.state.splitTransactions.length === 0) {
+    if (this.state.transactions.length === 0) {
       return null; // or some other fallback UI when there are no transactions
     }
 
@@ -205,7 +205,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
             </AlertDialogCancel>
             <AlertDialogAction onClick={()=>{
                           this.setState({openDeleteDialog: false})
-                          this.DeleteTransaction(this.state.currentTransaction.ID)
+                          this.DeleteTransaction(this.state.currentTransaction.SplitTransactionId)
                           }}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -261,7 +261,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
             </AlertDialogCancel>
             <AlertDialogAction onClick={()=>{
                           this.setState({openDeleteSplitsDialog: false})
-                          this.DeleteSplitsOfTransaction(this.state.currentTransaction.ID)
+                          this.DeleteSplitsOfTransaction(this.state.currentTransaction.SplitTransactionId)
                           }}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -277,23 +277,13 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {this.state.splitTransactions.map((transaction) => {
-              // Corrected the syntax here
-              const dateTime = DateTime.fromISO(transaction.Time, { zone: 'IST' });
-              const date = dateTime.toFormat('dd LLL-yyyy');
-              const time = dateTime.toFormat('hh:mm a');
+            {this.state.transactions.map((transaction) => {            
               return (
-                <TableRow key={transaction.ID}>
-                  <TableCell className="w-1/6 text-center">{date}</TableCell>
-                  <TableCell className="w-1/6 text-center">{time}</TableCell>
+                <TableRow key={transaction.SplitTransactionId}>
+                  <TableCell className="w-1/6 text-center">{transaction.FriendName}</TableCell>
                   <TableCell className="w-1/6 text-center">{transaction.CategoryName}</TableCell>
-                  { transaction.Amount < 0 ? 
-                      <TableCell className="w-1/12 text-right text-green-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
-                    :
-                    <TableCell className="w-1/12 text-right  text-red-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
-                  }
-                  <TableCell className="w-1/6 text-center">{transaction.Description}</TableCell>
-                  <TableCell className="w-1/6 text-center">{transaction.SplitTag}</TableCell>
+                  <TableCell className="w-1/12 text-right">₹{numeral(transaction.SourceAmount).format('0,0.00')}</TableCell>
+                  <TableCell className="w-1/12 text-right">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
                   <TableCell className="w-1/12">
                     <div className='flex items-center justify-center'>
                       <DropdownMenu>
@@ -327,4 +317,4 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   }
 }
 
-export default Transactions;
+export default SplitTransactions;
