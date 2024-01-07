@@ -10,13 +10,11 @@ import SplitTransactionContainer from './components/splitTransactionContainer.ts
 
 function App() {
   return (
-    <>
-      
-      
+    <>      
       <BrowserRouter>
         <Headers/>
         <Routes>
-          <Route path="/" element={<Home />}></Route>
+          <Route path="/" element={<TransactionContainer />}></Route>
             <Route path="transactions" element={<TransactionContainer />} />
             <Route path="categories" element={<Home />} />
             <Route path="friends" element={<Home />} />

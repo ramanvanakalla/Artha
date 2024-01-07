@@ -45,6 +45,17 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+import {
+    ArrowDownIcon,
+    ArrowRightIcon,
+    ArrowUpIcon,
+    CheckCircledIcon,
+    CircleIcon,
+    CrossCircledIcon,
+    QuestionMarkCircledIcon,
+    StopwatchIcon,
+  } from "@radix-ui/react-icons"
+
 import numeral from 'numeral';
 
 interface SplitTransaction {
@@ -174,6 +185,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
     "Category",
     "Source Amount",
     "Split Amount",
+    "Status",
     "Action"
   ]
 
@@ -276,13 +288,31 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
             </TableRow>
           </TableHeader>
           <TableBody>
-            {this.state.transactions.map((transaction) => {            
+            {this.state.transactions.map((transaction) => {  
+                console.log(transaction.SettledTransactionId)          
               return (
                 <TableRow key={transaction.SplitTransactionId}>
-                  <TableCell className="w-1/6 text-center">{transaction.FriendName}</TableCell>
-                  <TableCell className="w-1/6 text-center">{transaction.CategoryName}</TableCell>
-                  <TableCell className="w-1/12 text-right">₹{numeral(transaction.SourceAmount).format('0,0.00')}</TableCell>
-                  <TableCell className="w-1/12 text-right">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
+                    <TableCell className="w-1/12 text-center">{transaction.FriendName}</TableCell>
+                    <TableCell className="w-1/12 text-center">{transaction.CategoryName}</TableCell>
+                    <TableCell className="w-1/12 text-right">₹{numeral(transaction.SourceAmount).format('0,0.00')}</TableCell>
+                    <TableCell className="w-1/12 text-right">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
+                    {
+                        transaction.SettledTransactionId !== 0?
+                            <TableCell className='w-1/12'>
+                                <div className='flex items-center justify-center text-green-600'>
+                                    <CheckCircledIcon></CheckCircledIcon>
+                                    <span> Setteled </span>
+                                </div>
+                            </TableCell>
+                        :
+                            <TableCell className='w-1/12'>
+                                <div className='flex items-center justify-center text-red-600'>
+                                    <CrossCircledIcon></CrossCircledIcon>
+                                    <span> Un-Setteled </span>
+                                </div>
+                            </TableCell>
+                    }
+                    
                   <TableCell className="w-1/12">
                     <div className='flex items-center justify-center'>
                       <DropdownMenu>
@@ -293,13 +323,14 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Edit Transaction</DropdownMenuItem>                         
-                          <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Delete Transaction</DropdownMenuItem>
-                          <DropdownMenuItem onClick={()=>{this.setState({openDeleteSplitsDialog:true, currentTransaction: transaction})}}>Delete Splits</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>Split Transaction</DropdownMenuItem>
-                          <DropdownMenuItem>View Splits</DropdownMenuItem>
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            {
+                                transaction.SettledTransactionId !== 0 ?
+                                <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Un-Settle Transaction</DropdownMenuItem> 
+                                :
+                                <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Settle Transaction</DropdownMenuItem>               
+                            }
+                            <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Show Source Transaction</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
