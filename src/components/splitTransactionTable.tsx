@@ -17,7 +17,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
@@ -46,14 +45,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 import {
-    ArrowDownIcon,
-    ArrowRightIcon,
-    ArrowUpIcon,
     CheckCircledIcon,
-    CircleIcon,
     CrossCircledIcon,
-    QuestionMarkCircledIcon,
-    StopwatchIcon,
   } from "@radix-ui/react-icons"
 
 import numeral from 'numeral';
