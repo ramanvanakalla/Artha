@@ -294,14 +294,14 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                             <TableCell className='w-1/12'>
                                 <div className='flex items-center justify-center text-green-600'>
                                     <CheckCircledIcon></CheckCircledIcon>
-                                    <span> Setteled </span>
+                                    <span className='px-2'> Settled </span>
                                 </div>
                             </TableCell>
                         :
                             <TableCell className='w-1/12'>
                                 <div className='flex items-center justify-center text-red-600'>
                                     <CrossCircledIcon></CrossCircledIcon>
-                                    <span> Un-Setteled </span>
+                                    <span className='px-2'>Unsettled </span>
                                 </div>
                             </TableCell>
                     }
@@ -319,7 +319,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             {
                                 transaction.SettledTransactionId !== 0 ?
-                                <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Un-Settle Transaction</DropdownMenuItem> 
+                                <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Unsettle Transaction</DropdownMenuItem> 
                                 :
                                 <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Settle Transaction</DropdownMenuItem>               
                             }
