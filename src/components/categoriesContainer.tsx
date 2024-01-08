@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Container, Dimmer, Loader } from 'semantic-ui-react';
+import {Dimmer, Loader } from 'semantic-ui-react';
 import CategoryTable from './categoryTable'
 
 interface CategoryContainerState {
@@ -48,7 +48,6 @@ class CategoryContainer extends Component<{}, CategoryContainerState> {
   render(): JSX.Element {
     return (
       <div >
-        <Container>
           {this.state.loading ? (
             <Dimmer active>
               <Loader>Loading...</Loader>
@@ -56,7 +55,6 @@ class CategoryContainer extends Component<{}, CategoryContainerState> {
           ) : (
             <CategoryTable categories={this.state.categories} fetchTransactions={this.fetchCategoriesFromAPI.bind(this)}></CategoryTable>
           )}
-        </Container>
       </div>
     );
   }

@@ -75,8 +75,8 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
     }
 
     return (
-      <div className=" flex flex-row sm:flex-col">
-        <div className='w-1/3 sm:w-full'>
+      <div className=" flex lg:flex-row sm:flex-col">
+        <div className='lg:w-1/3 sm:w-full'>
             <Table>
                 <TableHeader>
                     <TableRow>

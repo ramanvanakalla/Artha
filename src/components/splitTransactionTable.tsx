@@ -270,9 +270,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
           </AlertDialogFooter>
         </AlertDialogContent>
         </AlertDialog>
-      <div className='w-1/3'>
-      </div>
-      <div className='w-2/3'>
+      <div className='w-full lg:mx-56'>
         <Table>
           <TableHeader>
             <TableRow>
@@ -287,20 +285,20 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                 console.log(transaction.SettledTransactionId)          
               return (
                 <TableRow key={transaction.SplitTransactionId}>
-                    <TableCell className="w-1/12 text-center">{transaction.FriendName}</TableCell>
-                    <TableCell className="w-1/12 text-center">{transaction.CategoryName}</TableCell>
-                    <TableCell className="w-1/12 text-right">₹{numeral(transaction.SourceAmount).format('0,0.00')}</TableCell>
-                    <TableCell className="w-1/12 text-right">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
+                    <TableCell className=" text-center">{transaction.FriendName}</TableCell>
+                    <TableCell className=" text-center">{transaction.CategoryName}</TableCell>
+                    <TableCell className=" text-right">₹{numeral(transaction.SourceAmount).format('0,0.00')}</TableCell>
+                    <TableCell className=" text-right">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
                     {
                         transaction.SettledTransactionId !== 0?
-                            <TableCell className='w-1/12'>
+                            <TableCell className=''>
                                 <div className='flex items-center justify-center text-green-600'>
                                     <CheckCircledIcon></CheckCircledIcon>
                                     <span className='px-2'> Settled </span>
                                 </div>
                             </TableCell>
                         :
-                            <TableCell className='w-1/12'>
+                            <TableCell className=''>
                                 <div className='flex items-center justify-center text-red-600'>
                                     <CrossCircledIcon></CrossCircledIcon>
                                     <span className='px-2'>Unsettled </span>
@@ -308,7 +306,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                             </TableCell>
                     }
                     
-                  <TableCell className="w-1/12">
+                  <TableCell className="">
                     <div className='flex items-center justify-center'>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

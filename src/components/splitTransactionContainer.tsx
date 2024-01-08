@@ -1,6 +1,6 @@
 import { Component } from 'react';
-import { Container, Dimmer, Loader } from 'semantic-ui-react';
 import SplitTransactions from './splitTransactionTable.tsx';
+import { Skeleton } from './ui/skeleton.tsx';
 
 interface TransactionContainerState {
   splitTransactions: [];
@@ -48,15 +48,11 @@ class SplitTransactionContainer extends Component<{}, TransactionContainerState>
   render(): JSX.Element {
     return (
       <div >
-        <Container >
           {this.state.loading ? (
-            <Dimmer active>
-              <Loader>Loading...</Loader>
-            </Dimmer>
+            <Skeleton className='mx-60 h-screen '/>
           ) : (
             <SplitTransactions transactions={this.state.splitTransactions} fetchTransactions={this.fetchSplitTransactionsFromAPI.bind(this)}></SplitTransactions>
           )}
-        </Container>
       </div>
     );
   }
