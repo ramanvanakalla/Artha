@@ -189,7 +189,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
 
     return (
       <>
-      <div className="lg:mx-32 lg:py-4">
+      <div className="flex">
       <AlertDialog open={this.state.openDeleteDialog}>
         <AlertDialogTrigger>
         </AlertDialogTrigger>
@@ -270,12 +270,14 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
           </AlertDialogFooter>
         </AlertDialogContent>
         </AlertDialog>
-
+      <div className='w-1/3'>
+      </div>
+      <div className='w-2/3'>
         <Table>
           <TableHeader>
             <TableRow>
               {this.headers.map((h) => (
-                h == "Amount" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
+                (h == "Amount" || h == "NetAmount") ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
                 <TableHead className='text-center' key={h}>{h}</TableHead>
               ))}
             </TableRow>
@@ -334,6 +336,8 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
           </TableBody>
         </Table>
       </div>
+      
+    </div>
                             
       </>
     );

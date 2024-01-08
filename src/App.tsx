@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './components/home.tsx'
 import SplitTransactionContainer from './components/splitTransactionContainer.tsx'
+import CategoryContainer from './components/categoriesContainer.tsx'
 
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<TransactionContainer />}></Route>
             <Route path="transactions" element={<TransactionContainer />} />
-            <Route path="categories" element={<Home />} />
+            <Route path="categories" element={<CategoryContainer />} />
             <Route path="friends" element={<Home />} />
             <Route path="splits" element={<SplitTransactionContainer />} />
         </Routes>
