@@ -7,15 +7,14 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './components/home.tsx'
 import SplitTransactionContainer from './components/splitTransactionContainer.tsx'
 import CategoryContainer from './components/categoriesContainer.tsx'
-
-
+import Login from './components/login.tsx'
 function App() {
   return (
     <>      
       <BrowserRouter>
         <Headers/>
         <Routes>
-          <Route path="/" element={<TransactionContainer />}></Route>
+          <Route path="/" element={< Login/>}></Route>
             <Route path="transactions" element={<TransactionContainer />} />
             <Route path="categories" element={<CategoryContainer />} />
             <Route path="friends" element={<Home />} />
