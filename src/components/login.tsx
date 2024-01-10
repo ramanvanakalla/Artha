@@ -81,7 +81,7 @@ export default function Login() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Login</Button>
       </form>
     </Form>
       </DialogContent>
