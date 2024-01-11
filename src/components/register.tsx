@@ -22,6 +22,9 @@ import {
 
 
 const formSchema = z.object({
+    name: z.string().min(5, {
+        message: "name must be at least 5 characters"
+    }),
     email: z.string().min(2, {
       message: "email must be at least 2 characters.",
     }).email('Invalid email address'),
@@ -30,7 +33,7 @@ const formSchema = z.object({
     })
   })
 
-export default function Login() {
+export default function Register() {
     // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,11 +53,23 @@ export default function Login() {
     <div className="flex justify-center">
         <Card className="w-[300px]">
         <CardHeader className="flex flex-row justify-between">
-            <CardTitle>Sign in</CardTitle>
+            <CardTitle>Sign up</CardTitle>
         </CardHeader>
         <CardContent>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 justify-center">
+                    <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormControl>
+                            <Input placeholder="Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
                     <FormField
                     control={form.control}
                     name="email"

@@ -9,11 +9,12 @@ import SplitTransactionContainer from './components/splitTransactionContainer.ts
 import CategoryContainer from './components/categoriesContainer.tsx'
 import Login from './components/login.tsx'
 import BGHeaders from './components/Bgheader.tsx'
+import Register from './components/register.tsx'
 function App() {
 
   const renderHeaders = () => {
     const currentPath = window.location.pathname;
-    if (currentPath === '/') {
+    if (currentPath === '/login' || currentPath === '/register') {
       return <BGHeaders />;
     }
     return <Headers />;
@@ -24,7 +25,9 @@ function App() {
       <BrowserRouter>
         {renderHeaders()}
         <Routes>
-          <Route path="/" element={< Login /> }></Route>
+            <Route path="login" element={< Login /> }></Route>
+            <Route path="register" element={ <Register/> }></Route>
+            <Route path="/" element={< TransactionContainer /> }></Route>
             <Route path="transactions" element={<TransactionContainer />} />
             <Route path="categories" element={<CategoryContainer />} />
             <Route path="friends" element={<Home />} />
