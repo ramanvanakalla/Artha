@@ -1,8 +1,17 @@
+
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -10,27 +19,19 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 
 const formSchema = z.object({
-  email: z.string().min(2, {
-    message: "email must be at least 2 characters.",
-  }).email('Invalid email address'),
-  password: z.string().min(8,{
-    message: "password must be at least 8 characters."
+    email: z.string().min(2, {
+      message: "email must be at least 2 characters.",
+    }).email('Invalid email address'),
+    password: z.string().min(8,{
+      message: "password must be at least 8 characters."
+    })
   })
-})
 
 export default function Login() {
-  // 1. Define your form.
+    // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,46 +47,48 @@ export default function Login() {
     console.log(values)
   }
   return (
-    <Dialog open={true}>
-      <DialogContent  className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Welcome Back !!</DialogTitle>
-          <DialogDescription>
-            Please enter email and password.
-          </DialogDescription>
-        </DialogHeader>
-          <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Password" {...field} />
-              </FormControl>
-              
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Login</Button>
-      </form>
-    </Form>
-      </DialogContent>
-    </Dialog>
+    <div className="flex justify-center">
+        <Card className="w-[300px]">
+        <CardHeader>
+            <CardTitle>Sign in</CardTitle>
+        </CardHeader>
+        <CardContent color="#B6E3FF">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 justify-center">
+                    <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormControl>
+                            <Input placeholder="Email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormControl>
+                            <Input placeholder="Password" {...field} />
+                        </FormControl>
+                        
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <div className="flex justify-center">
+                        <Button className="w-1/2" type="submit">Login</Button>
+                    </div>
+                </form>
+            </Form>
+        </CardContent>
+
+        </Card>
+    </div>
     
   )
 }

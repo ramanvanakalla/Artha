@@ -14,7 +14,7 @@ function App() {
   const renderHeaders = () => {
     const currentPath = window.location.pathname;
     if (currentPath === '/') {
-      return <BGHeaders />; // Don't render Headers for the home path
+      return <BGHeaders />;
     }
     return <Headers />;
   };
