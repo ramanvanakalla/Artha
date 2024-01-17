@@ -27,7 +27,7 @@ const SplitTransactionContainer: React.FC = () => {
       email: email,
       password: password,
     };
-
+    console.log("user ", userId)
     const url = 'https://karchu.onrender.com/v2/split-transaction/get-splits';
     const options: RequestInit = {
       method: 'POST',

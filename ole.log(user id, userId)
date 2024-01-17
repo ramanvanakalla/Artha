@@ -1,0 +1,134 @@
+[33mcommit d22aaff4ecd0fd9100feef31ade67ff45fcf2620[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Merge: ebad8fc 92f9316
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Wed Jan 17 22:31:01 2024 +0530
+
+    Merge pull request #1 from ramanvanakalla/test_branch
+    
+    login and register and able to store cred in local storage
+
+[33mcommit 92f931699c3bfdaa51a44b2b392400799644128f[m[33m ([m[1;31morigin/test_branch[m[33m)[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Wed Jan 17 22:28:59 2024 +0530
+
+    adding credentials storage
+
+[33mcommit 7a539e9abac3d9ebc1e74faf915e44a06f151e46[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Wed Jan 17 19:10:45 2024 +0530
+
+     many changes
+
+[33mcommit ebad8fce5e03afe9189653f01f8e10cf396d5570[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Thu Jan 11 19:58:52 2024 +0530
+
+    sign up
+
+[33mcommit a369be5e9e467ef57d65ab2ac2430c6e2b004415[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Thu Jan 11 19:36:34 2024 +0530
+
+    login page with card
+
+[33mcommit f6edcdb86bae0a2bf3b9a1b06c12b48b5d031d66[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Thu Jan 11 01:37:55 2024 +0530
+
+    login page
+
+[33mcommit c546fe95c47d1619931f6319361c7db14172a855[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Thu Jan 11 01:33:14 2024 +0530
+
+    login page
+
+[33mcommit f1ea28cec7737de8cecac60a8ec1f17bdb8195e5[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Thu Jan 11 01:29:54 2024 +0530
+
+    login page
+
+[33mcommit 2436fa70c7c36027f3626b03763bd7d379d01b98[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Thu Jan 11 00:47:42 2024 +0530
+
+    login page
+
+[33mcommit e8ec57b511a4eabe1cd03f18aaf8c21952d65af3[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Tue Jan 9 20:47:10 2024 +0530
+
+    logo and name change
+
+[33mcommit 6b77221d7a900d83d3b934f4290424b3776d323a[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Tue Jan 9 00:08:57 2024 +0530
+
+    remove container and use skeleton
+
+[33mcommit 287bcc266c3e1a104ff27cf57e67560a7cbbfcc4[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Mon Jan 8 20:57:27 2024 +0530
+
+    Categories
+
+[33mcommit a6f0827565001581fe020727ce781a3543f66141[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Mon Jan 8 20:50:37 2024 +0530
+
+    Categories
+
+[33mcommit 22a3f5fd269358cd7b9fb8ebc7b9f3274434f393[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 23:15:53 2024 +0530
+
+    margin for lg
+
+[33mcommit 92a133a1f3ee1d2be7906ae825d3b4bd6560233d[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 23:11:16 2024 +0530
+
+    margin for lg
+
+[33mcommit 5ce01c0f67e300bf7802b3652565e008cbca8dc7[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 23:05:00 2024 +0530
+
+    cosmetic changes
+
+[33mcommit e38745342ded0fac2b4f0073039d9702af8e5570[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 22:51:26 2024 +0530
+
+    small changes
+
+[33mcommit af509e6e33683609ba611b41c3d6f733cfda9140[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 22:48:29 2024 +0530
+
+    small changes
+
+[33mcommit f54f2835ebe535e3f391cb1d8dccf287166b373c[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 15:48:02 2024 +0530
+
+    build errors
+
+[33mcommit 9e7a45aaccc1842fdda4efaea2016e0f3fd7e839[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 15:45:09 2024 +0530
+
+    build errors
+
+[33mcommit 9fee18ee5e8a65626cb0a6a630f3ae965116e000[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 15:42:12 2024 +0530
+
+    splits
+
+[33mcommit da74c13bac297ee13d78e5cf7907d9d56f2c9c4d[m
+Author: ramanvanakalla <ramanvanakalla123@gmail.com>
+Date:   Sun Jan 7 11:17:47 2024 +0530
+
+    init changes
