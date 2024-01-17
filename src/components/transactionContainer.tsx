@@ -26,6 +26,7 @@ const TransactionContainer: React.FC<{}> = () => {
   const navigate = useNavigate();
 
   const fetchTransactionsFromAPI = async () => {
+    console.log("user id", userId)
     if( email == null || password == null){
       console.log("invalid cred: email:",email, " password:", password)
     }

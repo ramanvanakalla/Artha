@@ -24,6 +24,7 @@ const CategoryContainer: React.FC = () => {
   }, [contextLoggedIn, contextEmail, contextPassword, contextUserId]);
 
   const fetchCategoriesFromAPI = async () => {
+    console.log("user id", userId)
     const data = {
       email: email,
       password: password,
