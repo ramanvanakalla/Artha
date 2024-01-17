@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button"
+import { useNavigate } from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -11,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { useUserContext } from "@/components/userContext";
 
 import {
   Form,
@@ -31,6 +33,8 @@ const formSchema = z.object({
   })
 
 export default function Login() {
+  const { setCredentials } = useUserContext();
+  const navigate = useNavigate();
     // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,10 +46,33 @@ export default function Login() {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+    const data = {
+      email: values.email,
+      password: values.password,
+    };
+
+    const url = 'https://karchu.onrender.com/v1/user/auth';
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data ? JSON.stringify(data) : null,
+    };
+
+    fetch(url, options)
+      .then((response) => response.json())
+      .then((userId: number) => {
+        setCredentials(values.email, values.password, userId, true);
+        console.log("navigating to trans")
+        navigate("/transactions");
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+      
   }
+  
   return (
     <div className="flex justify-center">
         <Card className="w-[300px]">

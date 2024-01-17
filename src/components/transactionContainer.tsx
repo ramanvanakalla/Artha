@@ -1,22 +1,21 @@
-import { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Dimmer, Loader } from 'semantic-ui-react';
 import Transactions from './transactionTable.tsx'; // Assuming you have a type or interface for transaction data
+import { useNavigate } from 'react-router-dom';
+import { useUserContext } from './userContext.tsx'; 
 
-interface TransactionContainerState {
-  transactions: [];
-  loading: boolean;
-}
+const TransactionContainer: React.FC<{}> = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { loggedIn: contextLoggedIn } = useUserContext();
+  const [loggedIn, setLoggedIn] = useState<boolean>(contextLoggedIn);
 
-class TransactionContainer extends Component<{}, TransactionContainerState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      transactions: [],
-      loading: true,
-    };
-  }
+  useEffect(() => {
+    setLoggedIn(contextLoggedIn);
+  }, [contextLoggedIn]);
+  const navigate = useNavigate();
 
-  fetchTransactionsFromAPI(): void {
+  const fetchTransactionsFromAPI = async () => {
     const data = {
       email: "ramanvanakalla123@gmail.com",
       password: "Raman@123",
@@ -31,35 +30,47 @@ class TransactionContainer extends Component<{}, TransactionContainerState> {
       body: data ? JSON.stringify(data) : null,
     };
 
-    fetch(url, options)
-      .then((response) => response.json())
-      .then((data: []) => {
-        this.setState({ transactions: data, loading: false });
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }
+    try {
+      const response = await fetch(url, options);
+      const data: [] = await response.json();
+      setTransactions(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-  componentDidMount(): void {
-    this.fetchTransactionsFromAPI();
-  }
+  useEffect(() => {
+    console.log(loggedIn)
+    const fetchData = async () => {
+      console.log("Fetching data");
+        await fetchTransactionsFromAPI();
+        return;
+      if (loggedIn) {
+        console.log("Fetching data");
+        await fetchTransactionsFromAPI();
+      } else {
+        console.log("routing it to login")
+        navigate("/login");
+      }
+    };
 
-  render(): JSX.Element {
-    return (
-      <div >
-        <Container >
-          {this.state.loading ? (
-            <Dimmer active>
-              <Loader>Loading...</Loader>
-            </Dimmer>
-          ) : (
-            <Transactions transactions={this.state.transactions} fetchTransactions={this.fetchTransactionsFromAPI.bind(this)}></Transactions>
-          )}
-        </Container>
-      </div>
-    );
-  }
-}
+    fetchData();
+  }, [loggedIn]);
+
+  return (
+    <div>
+      <Container>
+        {loading ? (
+          <Dimmer active>
+            <Loader>Loading...</Loader>
+          </Dimmer>
+        ) : (
+          <Transactions transactions={transactions} fetchTransactions={fetchTransactionsFromAPI} />
+        )}
+      </Container>
+    </div>
+  );
+};
 
 export default TransactionContainer;

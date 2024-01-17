@@ -1,4 +1,4 @@
-
+import { Link } from 'react-router-dom';
 const  BGHeaders = () => {
   return (
     <div className="justify-center lg:my-12">
@@ -9,7 +9,7 @@ const  BGHeaders = () => {
          </div>
           
          <div className="flex justify-center my-1">
-          New to Artha? <a className="px-2 text-blue-500 hover:underline" href="/register">Create Account</a>
+          New to Artha? <Link to='/register' className="px-2 text-blue-500 hover:underline">Create Account</Link>
          </div>
     </div>
   );
