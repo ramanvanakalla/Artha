@@ -7,18 +7,31 @@ import { useUserContext } from './userContext.tsx';
 const TransactionContainer: React.FC<{}> = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { loggedIn: contextLoggedIn } = useUserContext();
+  const {
+    email: contextEmail,
+    password: contextPassword,
+    userId: contextUserId,
+    loggedIn: contextLoggedIn
+  } = useUserContext();
   const [loggedIn, setLoggedIn] = useState<boolean>(contextLoggedIn);
-
+  const [email, setEmail] = useState<string|null>(contextEmail);
+  const [password, setPassword] = useState<string|null>(contextPassword);
+  const [userId, setUserId] = useState<number|null>(contextUserId);
   useEffect(() => {
     setLoggedIn(contextLoggedIn);
-  }, [contextLoggedIn]);
+    setEmail(contextEmail);
+    setPassword(contextPassword);
+    setUserId(contextUserId);
+  }, [contextLoggedIn, contextEmail, contextPassword, contextUserId]);
   const navigate = useNavigate();
 
   const fetchTransactionsFromAPI = async () => {
+    if( email == null || password == null){
+      console.log("invalid cred: email:",email, " password:", password)
+    }
     const data = {
-      email: "ramanvanakalla123@gmail.com",
-      password: "Raman@123",
+      email: email,
+      password: password,
     };
 
     const url = 'https://karchu.onrender.com/v1/transactions/get';
@@ -41,22 +54,20 @@ const TransactionContainer: React.FC<{}> = () => {
   };
 
   useEffect(() => {
-    console.log(loggedIn)
+    console.log(loggedIn);
     const fetchData = async () => {
-      console.log("Fetching data");
-        await fetchTransactionsFromAPI();
-        return;
       if (loggedIn) {
         console.log("Fetching data");
         await fetchTransactionsFromAPI();
       } else {
-        console.log("routing it to login")
+        console.log("Routing to login");
         navigate("/login");
       }
     };
-
+  
     fetchData();
-  }, [loggedIn]);
+  }, [loggedIn, email, password]); // Include email and password as dependencies
+  
 
   return (
     <div>

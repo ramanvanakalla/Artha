@@ -10,6 +10,7 @@ import RenderHeader from './components/renderHeaders.tsx'
 import { useUserContext } from './components/userContext.tsx'; 
 import { Toaster } from "@/components/ui/sonner"
 import Home from './components/home.tsx'
+import 'semantic-ui-css/semantic.min.css'
 
 function App() {
   const { loggedIn: contextLoggedIn } = useUserContext();
@@ -22,14 +23,31 @@ function App() {
   return (
     <>      
       <BrowserRouter>
-      <RenderHeader loggedIn={loggedIn}></RenderHeader>
-        <Routes>
-          <Route path="transactions" element={<TransactionContainer/>} />
-          <Route path="categories" element={<CategoryContainer />} />
-          <Route path="friends" element={<Home />} />
-          <Route path="splits" element={<SplitTransactionContainer />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+      <RenderHeader></RenderHeader>
+        <Routes>          
+          {
+            loggedIn ? (
+              <>
+                <Route path="/" element={<Navigate to="/transactions" />} />
+                <Route path="/login" element={<Navigate to="/transactions" />} />
+                <Route path="/register" element={<Navigate to="/transactions" />} />
+                <Route path="transactions" element={<TransactionContainer/>} />
+                <Route path="categories" element={<CategoryContainer />} />
+                <Route path="friends" element={<Home />} />
+                <Route path="splits" element={<SplitTransactionContainer />} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={<Navigate to="/login" />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="transactions" element={<Navigate to="/login" />}/>
+                <Route path="categories" element={<Navigate to="/login" />} />
+                <Route path="friends" element={<Navigate to="/login" />}/>
+                <Route path="splits" element={<Navigate to="/login" />} />
+              </>
+            )
+          }
         </Routes>
         <Toaster richColors />
       </BrowserRouter>

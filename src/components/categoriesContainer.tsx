@@ -1,25 +1,32 @@
-import { Component } from 'react';
-import {Dimmer, Loader } from 'semantic-ui-react';
-import CategoryTable from './categoryTable'
+import React, { useState, useEffect } from 'react';
+import { Dimmer, Loader } from 'semantic-ui-react';
+import CategoryTable from './categoryTable';
+import { useUserContext } from './userContext.tsx'; 
 
-interface CategoryContainerState {
-  categories: [];
-  loading: boolean;
-}
+const CategoryContainer: React.FC = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const {
+    email: contextEmail,
+    password: contextPassword,
+    userId: contextUserId,
+    loggedIn: contextLoggedIn
+  } = useUserContext();
+  const [loggedIn, setLoggedIn] = useState<boolean>(contextLoggedIn);
+  const [email, setEmail] = useState<string|null>(contextEmail);
+  const [password, setPassword] = useState<string|null>(contextPassword);
+  const [userId, setUserId] = useState<number|null>(contextUserId);
+  useEffect(() => {
+    setLoggedIn(contextLoggedIn);
+    setEmail(contextEmail);
+    setPassword(contextPassword);
+    setUserId(contextUserId);
+  }, [contextLoggedIn, contextEmail, contextPassword, contextUserId]);
 
-class CategoryContainer extends Component<{}, CategoryContainerState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      categories: [],
-      loading: true,
-    };
-  }
-
-  fetchCategoriesFromAPI(): void {
+  const fetchCategoriesFromAPI = async () => {
     const data = {
-      email: "ramanvanakalla123@gmail.com",
-      password: "Raman@123",
+      email: email,
+      password: password,
     };
 
     const url = 'https://karchu.onrender.com/v1/net-amount/';
@@ -31,33 +38,31 @@ class CategoryContainer extends Component<{}, CategoryContainerState> {
       body: data ? JSON.stringify(data) : null,
     };
 
-    fetch(url, options)
-      .then((response) => response.json())
-      .then((data: []) => {
-        this.setState({ categories: data, loading: false });
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }
+    try {
+      const response = await fetch(url, options);
+      const data: [] = await response.json();
+      setCategories(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-  componentDidMount(): void {
-    this.fetchCategoriesFromAPI();
-  }
+  useEffect(() => {
+    fetchCategoriesFromAPI();
+  }, [loggedIn, email, password]);
 
-  render(): JSX.Element {
-    return (
-      <div >
-          {this.state.loading ? (
-            <Dimmer active>
-              <Loader>Loading...</Loader>
-            </Dimmer>
-          ) : (
-            <CategoryTable categories={this.state.categories} fetchTransactions={this.fetchCategoriesFromAPI.bind(this)}></CategoryTable>
-          )}
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      {loading ? (
+        <Dimmer active>
+          <Loader>Loading...</Loader>
+        </Dimmer>
+      ) : (
+        <CategoryTable categories={categories} fetchTransactions={fetchCategoriesFromAPI} />
+      )}
+    </div>
+  );
+};
 
 export default CategoryContainer;

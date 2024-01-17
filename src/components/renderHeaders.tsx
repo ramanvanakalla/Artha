@@ -7,7 +7,7 @@ const RenderHeader: React.FC = () => {
   const { loggedIn } = useUserContext(); // Get the loggedIn state from the context
 
   const renderHeader = (): JSX.Element => {
-    return !loggedIn ? <Headers /> : <BGHeaders />;
+    return loggedIn ? <Headers /> : <BGHeaders />;
   };
 
   console.log("headers", loggedIn);

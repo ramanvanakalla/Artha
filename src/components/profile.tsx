@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,32 +7,39 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import UserAvatar from "./userAvatar"
+} from "@/components/ui/dropdown-menu";
+import UserAvatar from "./userAvatar";
+import { useUserContext } from "./userContext"; 
 
 const Profile = () => {
+  const { setCredentials } = useUserContext(); 
+
+  const logout = () => {
+    setCredentials(null, null, null, false);
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("loginTime");
+  };
+
   return (
     <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button variant="nothing">
-                <UserAvatar></UserAvatar>
-            </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-36 mx-2">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        Settings
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    Log out
-                </DropdownMenuItem>
-        </DropdownMenuContent>
+      <DropdownMenuTrigger asChild>
+        <Button variant="nothing">
+          <UserAvatar />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-36 mx-2">
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
+      </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

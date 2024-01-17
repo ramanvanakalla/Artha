@@ -64,6 +64,10 @@ export default function Login() {
       .then((response) => response.json())
       .then((userId: number) => {
         setCredentials(values.email, values.password, userId, true);
+        localStorage.setItem('email', values.email);
+        localStorage.setItem('userId', userId.toString());
+        localStorage.setItem('password', values.password);
+        localStorage.setItem('loginTime', new Date().getTime().toString());
         console.log("navigating to trans")
         navigate("/transactions");
       })
