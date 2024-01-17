@@ -1,25 +1,37 @@
-import { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Dimmer, Loader } from 'semantic-ui-react';
 import Transactions from './transactionTable.tsx'; // Assuming you have a type or interface for transaction data
+import { useNavigate } from 'react-router-dom';
+import { useUserContext } from './userContext.tsx'; 
 
-interface TransactionContainerState {
-  transactions: [];
-  loading: boolean;
-}
+const TransactionContainer: React.FC<{}> = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const {
+    email: contextEmail,
+    password: contextPassword,
+    userId: contextUserId,
+    loggedIn: contextLoggedIn
+  } = useUserContext();
+  const [loggedIn, setLoggedIn] = useState<boolean>(contextLoggedIn);
+  const [email, setEmail] = useState<string|null>(contextEmail);
+  const [password, setPassword] = useState<string|null>(contextPassword);
+  const [userId, setUserId] = useState<number|null>(contextUserId);
+  useEffect(() => {
+    setLoggedIn(contextLoggedIn);
+    setEmail(contextEmail);
+    setPassword(contextPassword);
+    setUserId(contextUserId);
+  }, [contextLoggedIn, contextEmail, contextPassword, contextUserId]);
+  const navigate = useNavigate();
 
-class TransactionContainer extends Component<{}, TransactionContainerState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      transactions: [],
-      loading: true,
-    };
-  }
-
-  fetchTransactionsFromAPI(): void {
+  const fetchTransactionsFromAPI = async () => {
+    if( email == null || password == null){
+      console.log("invalid cred: email:",email, " password:", password)
+    }
     const data = {
-      email: "ramanvanakalla123@gmail.com",
-      password: "Raman@123",
+      email: email,
+      password: password,
     };
 
     const url = 'https://karchu.onrender.com/v1/transactions/get';
@@ -31,35 +43,45 @@ class TransactionContainer extends Component<{}, TransactionContainerState> {
       body: data ? JSON.stringify(data) : null,
     };
 
-    fetch(url, options)
-      .then((response) => response.json())
-      .then((data: []) => {
-        this.setState({ transactions: data, loading: false });
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }
+    try {
+      const response = await fetch(url, options);
+      const data: [] = await response.json();
+      setTransactions(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-  componentDidMount(): void {
-    this.fetchTransactionsFromAPI();
-  }
+  useEffect(() => {
+    console.log(loggedIn);
+    const fetchData = async () => {
+      if (loggedIn) {
+        console.log("Fetching data");
+        await fetchTransactionsFromAPI();
+      } else {
+        console.log("Routing to login");
+        navigate("/login");
+      }
+    };
+  
+    fetchData();
+  }, [loggedIn, email, password]); // Include email and password as dependencies
+  
 
-  render(): JSX.Element {
-    return (
-      <div >
-        <Container >
-          {this.state.loading ? (
-            <Dimmer active>
-              <Loader>Loading...</Loader>
-            </Dimmer>
-          ) : (
-            <Transactions transactions={this.state.transactions} fetchTransactions={this.fetchTransactionsFromAPI.bind(this)}></Transactions>
-          )}
-        </Container>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <Container>
+        {loading ? (
+          <Dimmer active>
+            <Loader>Loading...</Loader>
+          </Dimmer>
+        ) : (
+          <Transactions transactions={transactions} fetchTransactions={fetchTransactionsFromAPI} />
+        )}
+      </Container>
+    </div>
+  );
+};
 
 export default TransactionContainer;
