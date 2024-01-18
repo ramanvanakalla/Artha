@@ -22,6 +22,7 @@ function App() {
   console.log("logged in ", loggedIn)
   return (
     <>      
+      <Toaster richColors position="top-center" className="lg:hidden" />
       <BrowserRouter>
       <RenderHeader></RenderHeader>
         <Routes>          
@@ -49,7 +50,7 @@ function App() {
             )
           }
         </Routes>
-        <Toaster richColors className='hidden sm:block'/>
+        <Toaster richColors className='sm:hidden md:hidden'/>
       </BrowserRouter>
     </>
   )
