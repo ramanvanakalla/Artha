@@ -71,6 +71,7 @@ export default function Register() {
         return response.json();
       })
       .then((data: {}) => {
+        console.log(data)
         toast.success("User created successfully")
         navigate("/login");
       })
