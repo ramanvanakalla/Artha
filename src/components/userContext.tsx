@@ -21,9 +21,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const userIdNumber = userIdString ? parseInt(userIdString, 10) : null;
   const [userId, setUserId] = useState<number | null>(userIdNumber);
   let initLoggedInState = false;
-  if(userIdNumber != 0 && userIdNumber != null){
-    initLoggedInState = true; 
+  if (userIdNumber !== 0 && userIdNumber !== null && typeof userIdNumber === 'number') {
+    initLoggedInState = true;
   }
+  
   const [loggedIn, setLoggedIn] = useState<boolean>(initLoggedInState);
 
   const setCredentials = (newEmail: string | null, newPassword: string | null, userId: number | null, loggedIn: boolean) => {
@@ -44,6 +45,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       localStorage.removeItem('userName');
       localStorage.removeItem('userPassword');
       localStorage.removeItem('loginTime');
+      localStorage.removeItem('loggedIn');
     }
   };
 
