@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { useUserContext } from "@/components/userContext";
+import { toast } from "sonner"
 
 import {
   Form,
@@ -61,7 +62,13 @@ export default function Login() {
     };
 
     fetch(url, options)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          toast.error("Invalid login credentials. Verify your username and password and try again")
+          throw new Error(`HTTP error! Status: ${response}`);
+        }
+        return response.json();
+      })
       .then((userId: number) => {
         setCredentials(values.email, values.password, userId, true);
         localStorage.setItem('email', values.email);
