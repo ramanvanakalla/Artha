@@ -7,10 +7,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-
+import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { toast } from "sonner"
 
 import {
   Form,
@@ -34,6 +35,7 @@ const formSchema = z.object({
   })
 
 export default function Register() {
+  const navigate = useNavigate();
     // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,9 +47,39 @@ export default function Register() {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+    const data = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    };
+
+    const url = 'https://karchu.onrender.com/v1/user';
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data ? JSON.stringify(data) : null,
+    };
+
+    fetch(url, options)
+      .then((response) => {
+        if (!response.ok) {
+          toast.error("Failed to create user");
+          throw new Error(`HTTP error! Status: ${response}`);
+        }
+        return response.json();
+      })
+      .then((data: {}) => {
+        toast.success("User created successfully")
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+      form.setValue('email', '');
+      form.setValue('password', '');
+      form.setValue('name', "");
   }
   return (
     <div className="flex justify-center">

@@ -81,7 +81,8 @@ export default function Login() {
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
-      
+      form.setValue('email', '');
+      form.setValue('password', '');
   }
   
   return (
