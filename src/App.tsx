@@ -49,7 +49,7 @@ function App() {
             )
           }
         </Routes>
-        <Toaster richColors />
+        <Toaster richColors className='hidden sm:block'/>
       </BrowserRouter>
     </>
   )
