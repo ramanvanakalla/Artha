@@ -175,7 +175,13 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
       < this.newCategory></this.newCategory>
       <div className=" flex lg:flex-row sm:flex-col">
         <div className='lg:w-1/3 sm:w-full'>
-            <Table>
+          {
+             this.state.categories.length === 0 ?
+                <div className="flex items-center justify-center my-4">
+                    <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add Category </p>
+                </div>
+             :
+             <Table>
                 <TableHeader>
                     <TableRow>
                     {this.headers.map((h) => (
@@ -205,12 +211,14 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                             </TableCell>
+                              </TableCell>
                         </TableRow>
                     );
                     })}
                 </TableBody>
-            </Table>
+              </Table>
+          }
+            
         </div>
         <div className='w-2/3 mx-4'>
             <div className="w-full grid justify-items-end my-2">

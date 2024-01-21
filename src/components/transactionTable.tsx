@@ -82,7 +82,7 @@ interface TransactionsProps {
 }
 
 interface TransactionsState {
-  splitTransactions: Transaction[];
+  Transactions: Transaction[];
   openDeleteDialog: boolean;
   openEditDialog: boolean;
   openNewDialog: boolean;
@@ -102,7 +102,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   constructor(props: TransactionsProps) {
     super(props);
     this.state = {
-      splitTransactions: props.transactions,
+      Transactions: props.transactions,
       email: props.email,
       password: props.password,
       openDeleteDialog: false,
@@ -132,7 +132,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   componentDidUpdate(prevProps: TransactionsProps): void {
     if (prevProps.transactions !== this.props.transactions) {
       // Update state when transactions prop changes
-      this.setState({ splitTransactions: this.props.transactions });
+      this.setState({ Transactions: this.props.transactions });
     }
   }
 
@@ -274,7 +274,15 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
-      this.setState({openNewDialog:false})
+      this.setState({
+        openNewDialog:false,
+        newTransaction: {
+          Amount: 0,
+          Description: "",
+          Category: "",
+          SplitTag: ""
+        }
+      })
     }
     
     const fetchCategories = async () => {
@@ -504,57 +512,65 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
           <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Transaction
        </Button>
        </div>
-        <Table>
-          <TableHeader>
-              {this.headers.map((h) => (
-                h == "Amount" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
-                <TableHead className='text-center' key={h}>{h}</TableHead>
-              ))}
-          </TableHeader>
-          <TableBody>
-            {this.state.splitTransactions.map((transaction) => {
-              // Corrected the syntax here
-              const dateTime = DateTime.fromISO(transaction.Time, { zone: 'IST' });
-              const date = dateTime.toFormat('dd LLL-yyyy');
-              const time = dateTime.toFormat('hh:mm a');
-              return (
-                <TableRow key={transaction.ID}>
-                  <TableCell className="w-1/6 text-center">{date}</TableCell>
-                  <TableCell className="w-1/6 text-center">{time}</TableCell>
-                  <TableCell className="w-1/6 text-center">{transaction.CategoryName}</TableCell>
-                  { transaction.Amount < 0 ? 
-                      <TableCell className="w-1/12 text-right text-green-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
-                    :
-                    <TableCell className="w-1/12 text-right  text-red-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
-                  }
-                  <TableCell className="w-1/6 text-center">{transaction.Description}</TableCell>
-                  <TableCell className="w-1/6 text-center">{transaction.SplitTag}</TableCell>
-                  <TableCell className="w-1/12">
-                    <div className='flex items-center justify-center'>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <DotsHorizontalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Edit Transaction</DropdownMenuItem>                         
-                          <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Delete Transaction</DropdownMenuItem>
-                          <DropdownMenuItem onClick={()=>{this.setState({openDeleteSplitsDialog:true, currentTransaction: transaction})}}>Delete Splits</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>Split Transaction</DropdownMenuItem>
-                          <DropdownMenuItem>View Splits</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+       {
+          this.state.Transactions.length === 0 ?
+          <div className="flex items-center justify-center my-4">
+              <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add your first transaction</p>
+          </div>
+          :
+            <Table>
+                <TableHeader>
+                    {this.headers.map((h) => (
+                      h == "Amount" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
+                      <TableHead className='text-center' key={h}>{h}</TableHead>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                  {this.state.Transactions.map((transaction) => {
+                    // Corrected the syntax here
+                    const dateTime = DateTime.fromISO(transaction.Time, { zone: 'IST' });
+                    const date = dateTime.toFormat('dd LLL-yyyy');
+                    const time = dateTime.toFormat('hh:mm a');
+                    return (
+                      <TableRow key={transaction.ID}>
+                        <TableCell className="w-1/6 text-center">{date}</TableCell>
+                        <TableCell className="w-1/6 text-center">{time}</TableCell>
+                        <TableCell className="w-1/6 text-center">{transaction.CategoryName}</TableCell>
+                        { transaction.Amount < 0 ? 
+                            <TableCell className="w-1/12 text-right text-green-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
+                          :
+                          <TableCell className="w-1/12 text-right  text-red-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
+                        }
+                        <TableCell className="w-1/6 text-center">{transaction.Description}</TableCell>
+                        <TableCell className="w-1/6 text-center">{transaction.SplitTag}</TableCell>
+                        <TableCell className="w-1/12">
+                          <div className='flex items-center justify-center'>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Open menu</span>
+                                  <DotsHorizontalIcon className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Edit Transaction</DropdownMenuItem>                         
+                                <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Delete Transaction</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>{this.setState({openDeleteSplitsDialog:true, currentTransaction: transaction})}}>Delete Splits</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>Split Transaction</DropdownMenuItem>
+                                <DropdownMenuItem>View Splits</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+          </Table>
+       }
+        
       </div>
                             
       </>

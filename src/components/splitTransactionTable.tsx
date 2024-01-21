@@ -67,7 +67,7 @@ interface TransactionsProps {
 }
 
 interface TransactionsState {
-  transactions: SplitTransaction[];
+  splitTransactions: SplitTransaction[];
   openDeleteDialog: boolean;
   openEditDialog: boolean;
   currentTransaction: SplitTransaction;
@@ -79,7 +79,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
   constructor(props: TransactionsProps) {
     super(props);
     this.state = {
-      transactions: props.transactions,
+      splitTransactions: props.transactions,
       openDeleteDialog: false,
       openEditDialog: false,
       openDeleteSplitsDialog: false,
@@ -98,7 +98,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
   componentDidUpdate(prevProps: TransactionsProps): void {
     if (prevProps.transactions !== this.props.transactions) {
       // Update state when transactions prop changes
-      this.setState({ transactions: this.props.transactions });
+      this.setState({ splitTransactions: this.props.transactions });
     }
   }
 
@@ -268,66 +268,74 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
         </AlertDialogContent>
         </AlertDialog>
       <div className='w-full lg:mx-56'>
-        <Table>
-          <TableHeader>
-              {this.headers.map((h) => (
-                (h == "Amount" || h == "NetAmount") ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
-                <TableHead className='text-center' key={h}>{h}</TableHead>
-              ))}
-          </TableHeader>
-          <TableBody>
-            {this.state.transactions.map((transaction) => {  
-                console.log(transaction.SettledTransactionId)          
-              return (
-                <TableRow key={transaction.SplitTransactionId}>
-                    <TableCell className=" text-center">{transaction.FriendName}</TableCell>
-                    <TableCell className=" text-center">{transaction.CategoryName}</TableCell>
-                    <TableCell className=" text-right">₹{numeral(transaction.SourceAmount).format('0,0.00')}</TableCell>
-                    <TableCell className=" text-right">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
-                    {
-                        transaction.SettledTransactionId !== 0?
-                            <TableCell className=''>
-                                <div className='flex items-center justify-center text-green-600'>
-                                    <CheckCircledIcon></CheckCircledIcon>
-                                    <span className='px-2'> Settled </span>
-                                </div>
-                            </TableCell>
-                        :
-                            <TableCell className=''>
-                                <div className='flex items-center justify-center text-red-600'>
-                                    <CrossCircledIcon></CrossCircledIcon>
-                                    <span className='px-2'>Unsettled </span>
-                                </div>
-                            </TableCell>
-                    }
-                    
-                  <TableCell className="">
-                    <div className='flex items-center justify-center'>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <DotsHorizontalIcon className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        {
+            this.state.splitTransactions.length === 0 ?
+            <div className="flex items-center justify-center my-4">
+              <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Split Transactions</p>
+            </div>
+            :
+            <Table>
+                <TableHeader>
+                    {this.headers.map((h) => (
+                      (h == "Amount" || h == "NetAmount") ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
+                      <TableHead className='text-center' key={h}>{h}</TableHead>
+                    ))}
+                </TableHeader>
+                  <TableBody>
+                    {this.state.splitTransactions.map((transaction) => {  
+                        console.log(transaction.SettledTransactionId)          
+                      return (
+                        <TableRow key={transaction.SplitTransactionId}>
+                            <TableCell className=" text-center">{transaction.FriendName}</TableCell>
+                            <TableCell className=" text-center">{transaction.CategoryName}</TableCell>
+                            <TableCell className=" text-right">₹{numeral(transaction.SourceAmount).format('0,0.00')}</TableCell>
+                            <TableCell className=" text-right">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
                             {
-                                transaction.SettledTransactionId !== 0 ?
-                                <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Unsettle Transaction</DropdownMenuItem> 
+                                transaction.SettledTransactionId !== 0?
+                                    <TableCell className=''>
+                                        <div className='flex items-center justify-center text-green-600'>
+                                            <CheckCircledIcon></CheckCircledIcon>
+                                            <span className='px-2'> Settled </span>
+                                        </div>
+                                    </TableCell>
                                 :
-                                <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Settle Transaction</DropdownMenuItem>               
+                                    <TableCell className=''>
+                                        <div className='flex items-center justify-center text-red-600'>
+                                            <CrossCircledIcon></CrossCircledIcon>
+                                            <span className='px-2'>Unsettled </span>
+                                        </div>
+                                    </TableCell>
                             }
-                            <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Show Source Transaction</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                            
+                          <TableCell className="">
+                            <div className='flex items-center justify-center'>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <DotsHorizontalIcon className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    {
+                                        transaction.SettledTransactionId !== 0 ?
+                                        <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Unsettle Transaction</DropdownMenuItem> 
+                                        :
+                                        <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Settle Transaction</DropdownMenuItem>               
+                                    }
+                                    <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Show Source Transaction</DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+              </Table>
+        }
+        
       </div>
       
     </div>
