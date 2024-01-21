@@ -183,9 +183,6 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
   ]
 
   render() {
-    if (this.state.transactions.length === 0) {
-      return null; // or some other fallback UI when there are no transactions
-    }
 
     return (
       <>
