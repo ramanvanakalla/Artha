@@ -241,11 +241,10 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         this.setState({newTransactionError:"Select a splitTag"});
         return;
       }
-      console.log(this.state.newTransaction)
       const req = {
         amount: this.state.newTransaction.Amount,
         category: this.state.newTransaction.Category,
-        description: this.state.newTransaction.Category,
+        description: this.state.newTransaction.Description,
         splitTag: this.state.newTransaction.SplitTag,
         email: this.state.email,
         password: this.state.password

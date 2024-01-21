@@ -60,7 +60,7 @@ const CategoryContainer: React.FC = () => {
           <Loader>Loading...</Loader>
         </Dimmer>
       ) : (
-        <CategoryTable categories={categories} fetchTransactions={fetchCategoriesFromAPI} />
+        <CategoryTable categories={categories} email={email} password={password} fetchTransactions={fetchCategoriesFromAPI} />
       )}
     </div>
   );
