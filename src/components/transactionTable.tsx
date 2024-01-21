@@ -488,9 +488,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   }
 
   render() {
-    if (this.state.splitTransactions.length === 0) {
-      return null; 
-    }
+  
 
     return (
       <>
