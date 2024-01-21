@@ -78,7 +78,7 @@ const TransactionContainer: React.FC<{}> = () => {
             <Loader>Loading...</Loader>
           </Dimmer>
         ) : (
-          <Transactions transactions={transactions} fetchTransactions={fetchTransactionsFromAPI} />
+          <Transactions transactions={transactions} email={email} password={password} fetchTransactions={fetchTransactionsFromAPI} />
         )}
       </Container>
     </div>

@@ -273,12 +273,10 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
       <div className='w-full lg:mx-56'>
         <Table>
           <TableHeader>
-            <TableRow>
               {this.headers.map((h) => (
                 (h == "Amount" || h == "NetAmount") ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
                 <TableHead className='text-center' key={h}>{h}</TableHead>
               ))}
-            </TableRow>
           </TableHeader>
           <TableBody>
             {this.state.transactions.map((transaction) => {  

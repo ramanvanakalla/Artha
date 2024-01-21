@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React,{ Component } from 'react';
 import {
   Table,
   TableBody,
@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   DotsHorizontalIcon,
+  PlusCircledIcon
 } from "@radix-ui/react-icons"
 
 import {
@@ -32,7 +33,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,15 @@ import { Label } from "@/components/ui/label"
 
 import { DateTime } from 'luxon';
 import numeral from 'numeral';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Transaction {
   ID: number;
@@ -57,18 +66,35 @@ interface Transaction {
   SplitTag: string;
 }
 
+interface newTransaction{
+  Amount: number,
+  Description: string,
+  Category: string,
+  SplitTag: string
+}
+
+
 interface TransactionsProps {
   transactions: Transaction[];
-  fetchTransactions: ()=> void
+  fetchTransactions: ()=> void;
+  email: string|null;
+  password: string|null;
 }
 
 interface TransactionsState {
   splitTransactions: Transaction[];
   openDeleteDialog: boolean;
   openEditDialog: boolean;
+  openNewDialog: boolean;
   currentTransaction: Transaction;
-  openDeleteSplitsDialog: boolean
+  openDeleteSplitsDialog: boolean;
+  newTransaction: newTransaction;
+  categories: string[],
+  splitTags: string[],
+  email: string|null,
+  password: string|null
 }
+
 
 
 class Transactions extends Component<TransactionsProps, TransactionsState> {
@@ -76,9 +102,12 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     super(props);
     this.state = {
       splitTransactions: props.transactions,
+      email: props.email,
+      password: props.password,
       openDeleteDialog: false,
       openEditDialog: false,
       openDeleteSplitsDialog: false,
+      openNewDialog: false,
       currentTransaction: {
         ID: 0,
         Time: "", 
@@ -86,7 +115,15 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         Amount: 0, 
         Description: "",
         SplitTag: "",
-      }
+      },
+      newTransaction: {
+        Amount: 0,
+        Description: "",
+        Category: "",
+        SplitTag: ""
+      },
+      categories: [],
+      splitTags: []
     };
   }
 
@@ -178,38 +215,182 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     "Action"
   ]
 
+  newTransaction = () => {
+    const handleInputChange = (key: string, value: string| number) => {
+      this.setState((prevState) => ({
+        newTransaction: {
+          ...prevState.newTransaction,
+          [key]: value,
+        },
+      }));
+    };
+
+    const logTransaction = () =>{
+      console.log("logged trans");
+      this.setState({openNewDialog:false})
+    }
+    
+    const fetchCategories = async () => {
+      const data = {
+        email: this.state.email,
+        password: this.state.password,
+      };
+  
+      const url = 'https://karchu.onrender.com/v1/categories/all';
+      const options: RequestInit = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: data ? JSON.stringify(data) : null,
+      };
+  
+      try {
+        const response = await fetch(url, options);
+        const data: [] = await response.json();
+        this.setState({categories:data})
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    const fetchSplitTags = async() => { 
+      const url = 'https://karchu.onrender.com/v1/split-tags';
+      const options: RequestInit = {
+        method: 'GET'
+      };
+  
+      try {
+        const response = await fetch(url, options);
+        const data: [] = await response.json();
+        this.setState({splitTags:data})
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+  
+    // Fetch categories when the dialog is opened
+    React.useEffect(() => {
+      if (this.state.openNewDialog) {
+        fetchCategories();
+        fetchSplitTags();
+      }
+    }, [this.state.openNewDialog]);
+  
+
+
+
+    return(
+      <Dialog open={this.state.openNewDialog}>
+        <DialogTrigger asChild>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>New Transaction</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+          {
+                Object.entries(this.state.newTransaction).map(([key, value]) => (
+                  <div key={key} className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor={key} className="text-right">
+                          {key}
+                    </Label>
+                    {
+                        key === "Category" ? (
+                          <>
+                            <Select>
+                              <SelectTrigger className="col-span-3">
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                              <SelectContent className='p-0 max-h-[250px] overflow-auto'>
+                                <SelectGroup>
+                                  <SelectLabel>Categories</SelectLabel>
+                                  {this.state.categories.map((category) => (
+                                    <SelectItem value={category}>{category}</SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </>
+                        ) : key === "SplitTag" ? (
+                          <>
+                            <Select>
+                              <SelectTrigger className="col-span-3">
+                                <SelectValue placeholder="Select a split tag" />
+                              </SelectTrigger>
+                              <SelectContent className='p-0 max-h-[250px] overflow-auto'>
+                                <SelectGroup>
+                                  <SelectLabel>Split tags</SelectLabel>
+                                  {this.state.splitTags.map((SplitTag) => (
+                                    <SelectItem value={SplitTag}>{SplitTag}</SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </>
+                        ) : key === "Amount" ?(
+                          <Input id={key} value={value} type='number' className="col-span-3" onChange={(e) => handleInputChange(key, e.target.value)} />
+                        ):(
+                          <Input id={key} value={value} className="col-span-3" onChange={(e) => handleInputChange(key, e.target.value)} />
+                        )
+                    }
+
+                  </div>
+                ))
+          }
+          </div>
+          <DialogFooter>
+                <Button type="button" variant="secondary" onClick={()=> this.setState({openNewDialog:false})}>
+                  Close
+                </Button>
+            <Button type="submit" onClick={logTransaction}>Log Transaction</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
   render() {
     if (this.state.splitTransactions.length === 0) {
-      return null; // or some other fallback UI when there are no transactions
+      return null; 
     }
 
     return (
       <>
       <div className="lg:mx-32 lg:py-4">
-      <AlertDialog open={this.state.openDeleteDialog}>
-        <AlertDialogTrigger>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Transaction?</AlertDialogTitle>
-            <AlertDialogDescription>
-              `This action cannot be undone. This will permanently delete Transaction: 
-              Category <span className="font-bold">{this.state.currentTransaction.CategoryName}</span> and Amount <span className="font-bold">{this.state.currentTransaction.Amount}</span>`
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={()=>{
-                          this.setState({openDeleteDialog: false})
-                          }}>
-                            Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={()=>{
-                          this.setState({openDeleteDialog: false})
-                          this.DeleteTransaction(this.state.currentTransaction.ID)
-                          }}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        </AlertDialog>
+      
+        <this.newTransaction />
+
+        <Dialog open={this.state.openEditDialog}>
+          <DialogTrigger asChild>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit Transaction</DialogTitle>
+              <DialogDescription>
+                Make changes to your transaction here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {
+                Object.entries(this.state.currentTransaction).map(([key, value]) => (
+                  <div key={key} className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor={key} className="text-right">
+                      {key}
+                    </Label>
+                    <Input id={key} value={value} className="col-span-3" />
+                  </div>
+                ))
+              }
+            </div> 
+            <DialogFooter>
+                  <Button type="button" variant="secondary" onClick={()=> this.setState({openEditDialog:false})}>
+                    Close
+                  </Button>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Dialog open={this.state.openEditDialog}>
           <DialogTrigger asChild>
@@ -266,15 +447,17 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
           </AlertDialogFooter>
         </AlertDialogContent>
         </AlertDialog>
-
+       <div className="w-full grid justify-items-end my-2">
+       <Button onClick={()=> this.setState({openNewDialog:true})}>
+          <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Transaction
+       </Button>
+       </div>
         <Table>
           <TableHeader>
-            <TableRow>
               {this.headers.map((h) => (
                 h == "Amount" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
                 <TableHead className='text-center' key={h}>{h}</TableHead>
               ))}
-            </TableRow>
           </TableHeader>
           <TableBody>
             {this.state.splitTransactions.map((transaction) => {
