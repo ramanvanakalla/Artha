@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button"
+
 import {
   DotsHorizontalIcon,
   PlusCircledIcon
@@ -56,6 +57,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import LoadingComponent from './loading';
 
 interface Transaction {
   ID: number;
@@ -93,7 +95,8 @@ interface TransactionsState {
   categories: string[],
   splitTags: string[],
   email: string|null,
-  password: string|null
+  password: string|null,
+  loading: boolean
 }
 
 
@@ -125,22 +128,23 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       },
       categories: [],
       splitTags: [],
-      newTransactionError: ""
+      newTransactionError: "",
+      loading: false
     };
   }
 
   componentDidUpdate(prevProps: TransactionsProps): void {
-    if (prevProps.transactions !== this.props.transactions) {
+    if (prevProps.transactions !== this.props.transactions ) {
       // Update state when transactions prop changes
       this.setState({ Transactions: this.props.transactions });
     }
   }
 
   DeleteSplitsOfTransaction(transactionId: number){
-    console.log(transactionId)
+    this.setState({loading:true})
     const req = {
-      email: "ramanvanakalla123@gmail.com",
-      password: "Raman@123",
+      email: this.state.email,
+      password: this.state.password,
       transactionId: transactionId
     };
 
@@ -167,11 +171,26 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     })
     .catch((error) => {
       console.error('Error fetching data:', error);
-    });
+    })
+    .finally(()=>{
+      setTimeout(() => {
+        this.setState({
+          currentTransaction: {
+            ID: 0,
+            Time: "",
+            CategoryName: "",
+            Amount: 0,
+            Description: "",
+            SplitTag: "",
+          },
+          loading: false
+        });
+      }, 500);
+    })
   }
 
   DeleteTransaction(transactionId: number){
-    console.log(transactionId)
+    this.setState({loading:true})
     const req = {
       email: "ramanvanakalla123@gmail.com",
       password: "Raman@123",
@@ -186,7 +205,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       },
       body: req ? JSON.stringify(req) : null,
     };
-    console.log(JSON.stringify(req))
     fetch(url, options)
     .then((response) => response.json())
     .then((data: { success_code?: string; error_code?: string; success_message?: string; error_message?: string }) => {
@@ -199,12 +217,25 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         console.error('Unexpected response format:', data);
       }
       this.props.fetchTransactions()
-       //this.setState({ transactions: data, loading: false });
     })
     .catch((error) => {
       console.error('Error fetching data:', error);
-    });
-
+    })
+    .finally(()=>{
+      setTimeout(() => {
+        this.setState({
+          currentTransaction: {
+            ID: 0,
+            Time: "",
+            CategoryName: "",
+            Amount: 0,
+            Description: "",
+            SplitTag: "",
+          },
+          loading: false
+        });
+      }, 500);
+    })
   }
 
   headers = [
@@ -228,27 +259,29 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       this.setState({newTransactionError:""});
     };
 
-    const logTransaction = () =>{
-      if( this.state.newTransaction.Amount <= 0 ){
-        this.setState({newTransactionError:"Amount should be positive"});
+    const logTransaction = () => {
+      if (this.state.newTransaction.Amount <= 0) {
+        this.setState({ newTransactionError: "Amount should be positive" });
         return;
-      } 
-      else if(this.state.newTransaction.Category.length === 0){
-        this.setState({newTransactionError:"Select a category"});
+      } else if (this.state.newTransaction.Category.length === 0) {
+        this.setState({ newTransactionError: "Select a category" });
         return;
-      }
-      else if(this.state.newTransaction.SplitTag.length === 0){
-        this.setState({newTransactionError:"Select a splitTag"});
+      } else if (this.state.newTransaction.SplitTag.length === 0) {
+        this.setState({ newTransactionError: "Select a splitTag" });
         return;
       }
+    
+      this.setState({ openNewDialog: false, newTransactionError: "", loading: true });
+    
       const req = {
         amount: this.state.newTransaction.Amount,
         category: this.state.newTransaction.Category,
         description: this.state.newTransaction.Description,
         splitTag: this.state.newTransaction.SplitTag,
         email: this.state.email,
-        password: this.state.password
-      }
+        password: this.state.password,
+      };
+    
       const url = 'https://karchu.onrender.com/v1/transactions';
       const options: RequestInit = {
         method: 'POST',
@@ -257,33 +290,39 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         },
         body: req ? JSON.stringify(req) : null,
       };
-      console.log(JSON.stringify(req))
+    
       fetch(url, options)
-      .then((response) => response.json())
-      .then((data: { success_code?: string; error_code?: string; success_message?: string; error_message?: string }) => {
-        console.log(data)
-        if (data.success_code) {
-          toast.success(data.success_message)
-        } else if (data.error_code) {
-          toast.error(data.error_message)
-        } else {
-          console.error('Unexpected response format:', data);
-        }
-        this.props.fetchTransactions()
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-      this.setState({
-        openNewDialog:false,
-        newTransaction: {
-          Amount: 0,
-          Description: "",
-          Category: "",
-          SplitTag: ""
-        }
-      })
-    }
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          if (data.success_code) {
+            toast.success(data.success_message);
+            this.props.fetchTransactions();
+          } else if (data.error_code) {
+            toast.error(data.error_message);
+          } else {
+            console.error('Unexpected response format:', data);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        })
+        .finally(() => {
+          // Introduce a small delay before setting loading to false
+          setTimeout(() => {
+            this.setState({
+              newTransaction: {
+                Amount: 0,
+                Description: "",
+                Category: "",
+                SplitTag: "",
+              },
+              loading: false,
+            });
+          }, 500); // Adjust the delay time as needed
+        });
+    };
+    
     
     const fetchCategories = async () => {
       const data = {
@@ -330,10 +369,11 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         fetchCategories();
         fetchSplitTags();
       }
-    }, [this.state.openNewDialog]);
+    }, [this.state.openNewDialog, this.state.loading]);
 
     return(
-      <Dialog open={this.state.openNewDialog}>
+      <>
+        <Dialog open={this.state.openNewDialog}>
         <DialogTrigger asChild>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -394,11 +434,13 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                 <Button type="button" variant="secondary" onClick={()=> this.setState({openNewDialog:false, newTransactionError:""})}>
                   Close
                 </Button>
-            <Button type="submit" onClick={logTransaction}>Log Transaction</Button>
+            <Button type="submit" onClick={() => {logTransaction()}}>Log Transaction {this.state.loading}</Button>
           </DialogFooter>
           <p className="leading-7 [&:not(:first-child)]:mt-6 text-red-500">{this.state.newTransactionError}</p>
         </DialogContent>
       </Dialog>
+      </>
+      
     )
   }
 
@@ -495,13 +537,16 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     )
   }
 
+
+  
+
   render() {
   
 
     return (
       <>
-      <div className="lg:mx-32 lg:py-4">
-      
+      <LoadingComponent loading={this.state.loading}></LoadingComponent>
+      <div className="lg:mx-32 lg:py-4">       
         <this.newTransaction />
         <this.editTransaction />
         <this.deleteSplit />
