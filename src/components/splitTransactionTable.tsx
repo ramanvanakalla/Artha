@@ -63,6 +63,8 @@ interface SplitTransaction {
 
 interface TransactionsProps {
   transactions: SplitTransaction[];
+  email: string|null;
+  password: string|null;
   fetchTransactions: ()=> void
 }
 
@@ -71,7 +73,9 @@ interface TransactionsState {
   openDeleteDialog: boolean;
   openEditDialog: boolean;
   currentTransaction: SplitTransaction;
-  openDeleteSplitsDialog: boolean
+  openDeleteSplitsDialog: boolean;
+  email: string|null;
+  password: string|null;
 }
 
 
@@ -79,6 +83,8 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
   constructor(props: TransactionsProps) {
     super(props);
     this.state = {
+      email: props.email,
+      password: props.password,
       splitTransactions: props.transactions,
       openDeleteDialog: false,
       openEditDialog: false,
@@ -105,8 +111,8 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
   DeleteSplitsOfTransaction(transactionId: number){
     console.log(transactionId)
     const req = {
-      email: "ramanvanakalla123@gmail.com",
-      password: "Raman@123",
+      email: this.state.email,
+      password: this.state.password,
       transactionId: transactionId
     };
 
@@ -139,8 +145,8 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
   DeleteTransaction(transactionId: number){
     console.log(transactionId)
     const req = {
-      email: "ramanvanakalla123@gmail.com",
-      password: "Raman@123",
+      email: this.state.email,
+      password: this.state.password,
       transactionId: transactionId
     };
 
