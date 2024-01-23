@@ -56,7 +56,7 @@ const SplitTransactionContainer: React.FC = () => {
       {loading ? (
         <Skeleton className='mx-60 h-screen' />
       ) : (
-        <SplitTransactions transactions={splitTransactions} fetchTransactions={fetchSplitTransactionsFromAPI} />
+        <SplitTransactions transactions={splitTransactions} email={email} password={password} fetchTransactions={fetchSplitTransactionsFromAPI} />
       )}
     </div>
   );
