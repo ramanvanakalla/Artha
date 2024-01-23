@@ -192,8 +192,8 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
   DeleteTransaction(transactionId: number){
     this.setState({loading:true})
     const req = {
-      email: "ramanvanakalla123@gmail.com",
-      password: "Raman@123",
+      email: this.state.email,
+      password: this.state.password,
       transactionId: transactionId
     };
 
