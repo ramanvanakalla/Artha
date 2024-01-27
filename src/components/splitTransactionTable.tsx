@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { ScrollArea } from "@/components/ui/scroll-area"
+
 import {
   Table,
   TableBody,
@@ -291,6 +293,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
               <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Split Transactions</p>
             </div>
             :
+            <ScrollArea className="h-[475px] w-full rounded-md border">
             <Table className='border-collapse border-l w-full'>
                 <TableHeader>
                     {this.headers.map((h) => (
@@ -350,6 +353,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                     })}
                   </TableBody>
               </Table>
+              </ScrollArea>
         }
         
       </div>

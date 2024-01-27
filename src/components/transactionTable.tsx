@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button"
-
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   DotsHorizontalIcon,
   PlusCircledIcon
@@ -564,14 +564,18 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
               <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add your first transaction</p>
           </div>
           :
+          <ScrollArea className="h-[475px] w-full rounded-md border">
             <Table className='border-collapse border-l w-full'>
-                <TableHeader>
-                    {this.headers.map((h) => (
-                      h == "Amount" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
-                      <TableHead className='text-center' key={h}>{h}</TableHead>
-                    ))}
-                </TableHeader>
-                <TableBody>
+            <TableHeader>
+              {this.headers.map((header) => (
+                  <TableHead key={header} className={header === 'Amount' ? 'text-right' : 'text-center'}>
+                      {header}
+                  </TableHead>
+              ))}
+            </TableHeader>
+
+
+                <TableBody className='overflow-y-auto'>
                   {this.state.Transactions.map((transaction) => {
                     // Corrected the syntax here
                     const dateTime = DateTime.fromISO(transaction.Time, { zone: 'IST' });
@@ -579,7 +583,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                     const time = dateTime.toFormat('hh:mm a');
                     return (
                       <TableRow key={transaction.ID}>
-                        <TableCell className="w-1/6 border-r text-center">{date}</TableCell>
+                        <TableCell className="w-1/6 text-center">{date}</TableCell>
                         <TableCell className="w-1/6 text-center">{time}</TableCell>
                         <TableCell className="w-1/6 text-center">{transaction.CategoryName}</TableCell>
                         { transaction.Amount < 0 ? 
@@ -615,6 +619,8 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                   })}
                 </TableBody>
           </Table>
+          </ScrollArea>
+            
        }
         
       </div>

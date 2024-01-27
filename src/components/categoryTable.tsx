@@ -31,6 +31,8 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
   import { Button } from "@/components/ui/button"
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+
 
 interface NetCategory {
     Category: string;
@@ -172,6 +174,7 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
 
     return (
       <>
+      <div>
       < this.newCategory></this.newCategory>
       <div className="w-full grid justify-items-end my-2">
                 <Button onClick={()=> this.setState({openNewCatDialog:true})}>
@@ -184,45 +187,48 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
                     <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add Category </p>
                 </div>
              :
-             <Table>
-                <TableHeader>
-                    <TableRow>
-                    {this.headers.map((h) => (
-                        h == "Amount Spent" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
-                        <TableHead className='text-center' key={h}>{h}</TableHead>
-                    ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {this.state.categories.map((category, index) => {  
-                    return (
-                        <TableRow key={index}>
-                            <TableCell className="w-1/12 text-center">{category.Category}</TableCell>
-                            <TableCell className="w-1/12 text-right">₹{numeral(category.NetAmount).format('0,0.00')}</TableCell>
-                            <TableCell className="w-1/12">
-                                <div className='flex items-center justify-center'>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="h-8 w-8 p-0">
-                                            <span className="sr-only">Open menu</span>
-                                            <DotsHorizontalIcon className="h-4 w-4" />
-                                        </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem >New Category</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                              </TableCell>
-                        </TableRow>
-                    );
-                    })}
-                </TableBody>
-              </Table>
+             <ScrollArea className='h-[475px] w-full rounded-md border' style={{ overflow: 'auto' }}>
+                <Table className='w-full border-collapse border-l'>
+                  <TableHeader>
+                      <TableRow>
+                      {this.headers.map((h) => (
+                          h == "Amount Spent" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
+                          <TableHead className='text-center' key={h}>{h}</TableHead>
+                      ))}
+                      </TableRow>
+                  </TableHeader>
+                  <TableBody >
+                      {this.state.categories.map((category, index) => {  
+                      return (
+                          <TableRow key={index}>
+                              <TableCell className="w-1/12 text-center">{category.Category}</TableCell>
+                              <TableCell className="w-1/12 text-right">₹{numeral(category.NetAmount).format('0,0.00')}</TableCell>
+                              <TableCell className="w-1/12">
+                                  <div className='flex items-center justify-center'>
+                                      <DropdownMenu>
+                                          <DropdownMenuTrigger asChild>
+                                          <Button variant="ghost" className="h-8 w-8 p-0">
+                                              <span className="sr-only">Open menu</span>
+                                              <DotsHorizontalIcon className="h-4 w-4" />
+                                          </Button>
+                                          </DropdownMenuTrigger>
+                                          <DropdownMenuContent align="end">
+                                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                              <DropdownMenuItem >New Category</DropdownMenuItem>
+                                          </DropdownMenuContent>
+                                      </DropdownMenu>
+                                  </div>
+                                </TableCell>
+                          </TableRow>
+                      );
+                      })}
+                  </TableBody>
+                </Table>
+             </ScrollArea>
+             
           }
             
-            
+            </div>   
     </>
     );
   }

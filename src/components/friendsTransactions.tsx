@@ -7,6 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { Button } from "@/components/ui/button"
 import {
   DotsHorizontalIcon,
@@ -163,6 +165,7 @@ class FriendTransactions extends Component<TransactionsProps, TransactionsState>
               <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Split Transactions</p>
             </div>
             :
+            <ScrollArea className="h-[475px] w-full rounded-md border">
             <Table >
                 <TableHeader>
                     {this.headers.map((h) => (
@@ -199,6 +202,7 @@ class FriendTransactions extends Component<TransactionsProps, TransactionsState>
                     })}
                   </TableBody>
               </Table>
+              </ScrollArea>
         }     
       </>
     );
