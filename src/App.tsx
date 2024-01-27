@@ -1,9 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import TransactionContainer from './components/transactionContainer.jsx'
 import FriendsContainer from './components/friendsContainer.tsx';
-import SplitTransactionContainer from './components/splitTransactionContainer.tsx'
 import CategoryContainer from './components/categoriesContainer.tsx'
 import Login from './components/login.tsx'
 import Register from './components/register.tsx'
@@ -33,10 +31,8 @@ function App() {
                 <Route path="/" element={<Navigate to="/transactions" />} />
                 <Route path="/login" element={<Navigate to="/transactions" />} />
                 <Route path="/register" element={<Navigate to="/transactions" />} />
-                <Route path="transactions" element={<TransactionContainer/>} />
-                <Route path="categories" element={<CategoryContainer />} />
-                <Route path="friends" element={<FriendsContainer />} />
-                <Route path="splits" element={<SplitTransactionContainer />} />
+                <Route path="transactions" element={<CategoryContainer/>} />
+                <Route path="splits" element={<FriendsContainer />} />
               </>
             ) : (
               <>
@@ -44,8 +40,6 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="transactions" element={<Navigate to="/login" />}/>
-                <Route path="categories" element={<Navigate to="/login" />} />
-                <Route path="friends" element={<Navigate to="/login" />}/>
                 <Route path="splits" element={<Navigate to="/login" />} />
               </>
             )
