@@ -134,7 +134,6 @@ class FriendTransactions extends Component<TransactionsProps, TransactionsState>
         console.error('Unexpected response format:', data);
       }
       this.props.fetchTransactions()
-       //this.setState({ transactions: data, loading: false });
     })
     .catch((error) => {
       console.error('Error fetching data:', error);
@@ -178,8 +177,8 @@ class FriendTransactions extends Component<TransactionsProps, TransactionsState>
                       return (
                         <TableRow key={transaction.FriendName}>
                             <TableCell className=" text-center">{transaction.FriendName}</TableCell>
-                            <TableCell className=" text-right">₹{numeral(transaction.SettledAmount).format('0,0.00')}</TableCell>
-                            <TableCell className=" text-right">₹{numeral(transaction.UnSettledAmount).format('0,0.00')}</TableCell>
+                            <TableCell className=" text-right text-green-400">₹{numeral(transaction.SettledAmount).format('0,0.00')}</TableCell>
+                            <TableCell className=" text-right text-red-400">₹{numeral(transaction.UnSettledAmount).format('0,0.00')}</TableCell>
                             
                             
                           <TableCell className="">
