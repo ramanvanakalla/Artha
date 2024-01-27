@@ -546,11 +546,12 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     return (
       <>
       <LoadingComponent loading={this.state.loading}></LoadingComponent>
-      <div className="lg:mx-32 lg:py-4">       
-        <this.newTransaction />
-        <this.editTransaction />
-        <this.deleteSplit />
-        <this.deleteTransaction />
+      <div>       
+        { this.state.openNewDialog &&<this.newTransaction /> }
+        { this.state.openEditDialog && <this.editTransaction /> }
+        { this.state.openDeleteDialog && <this.deleteSplit /> }
+        { this.state.openDeleteDialog && <this.deleteTransaction /> }
+        
        
        <div className="w-full grid justify-items-end my-2">
        <Button onClick={()=> this.setState({openNewDialog:true})}>
@@ -563,7 +564,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
               <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add your first transaction</p>
           </div>
           :
-            <Table>
+            <Table className='border-collapse border-l w-full'>
                 <TableHeader>
                     {this.headers.map((h) => (
                       h == "Amount" ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
@@ -578,7 +579,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                     const time = dateTime.toFormat('hh:mm a');
                     return (
                       <TableRow key={transaction.ID}>
-                        <TableCell className="w-1/6 text-center">{date}</TableCell>
+                        <TableCell className="w-1/6 border-r text-center">{date}</TableCell>
                         <TableCell className="w-1/6 text-center">{time}</TableCell>
                         <TableCell className="w-1/6 text-center">{transaction.CategoryName}</TableCell>
                         { transaction.Amount < 0 ? 

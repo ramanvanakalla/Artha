@@ -2,6 +2,7 @@ import './App.css'
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import TransactionContainer from './components/transactionContainer.jsx'
+import FriendsContainer from './components/friendsContainer.tsx';
 import SplitTransactionContainer from './components/splitTransactionContainer.tsx'
 import CategoryContainer from './components/categoriesContainer.tsx'
 import Login from './components/login.tsx'
@@ -9,7 +10,6 @@ import Register from './components/register.tsx'
 import RenderHeader from './components/renderHeaders.tsx'
 import { useUserContext } from './components/userContext.tsx'; 
 import { Toaster } from "@/components/ui/sonner"
-import Home from './components/home.tsx'
 import 'semantic-ui-css/semantic.min.css'
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
                 <Route path="/register" element={<Navigate to="/transactions" />} />
                 <Route path="transactions" element={<TransactionContainer/>} />
                 <Route path="categories" element={<CategoryContainer />} />
-                <Route path="friends" element={<Home />} />
+                <Route path="friends" element={<FriendsContainer />} />
                 <Route path="splits" element={<SplitTransactionContainer />} />
               </>
             ) : (

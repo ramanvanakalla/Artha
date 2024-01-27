@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import Transactions from './transactionTable.tsx'; 
-import CategoryTable from './categoryTable';
+import FriendTransactions from './friendsTransactions.tsx'
+import { Skeleton } from './ui/skeleton.tsx';
 import { useUserContext } from './userContext.tsx'; 
+import SplitTransactions from './splitTransactionTable.tsx';
 
-const CategoryContainer: React.FC = () => {
-  const [categories, setCategories] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+
+const FriendsContainer: React.FC = () => {
+  const [moneyLentToFriend, setMoneyLentToFriend] = useState([]);
+  const [splitTransactions, setSplitTransactions] = useState([]);
+
+  const [loading, setLoading] = useState(true);
   const {
     email: contextEmail,
     password: contextPassword,
@@ -22,15 +26,36 @@ const CategoryContainer: React.FC = () => {
     setPassword(contextPassword);
     setUserId(contextUserId);
   }, [contextLoggedIn, contextEmail, contextPassword, contextUserId]);
-
-  const fetchCategoriesFromAPI = async () => {
-    console.log("user id", userId)
+  const fetchMoneyLentToFriends = async () => {
     const data = {
       email: email,
       password: password,
     };
-
-    const url = 'https://karchu.onrender.com/v1/net-amount/';
+    console.log("user ", userId)
+    const url = 'https://karchu.onrender.com/v2/friends/money-friends';
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data ? JSON.stringify(data) : null,
+    };
+    try {
+      const response = await fetch(url, options);
+      const data: [] = await response.json();
+      setMoneyLentToFriend(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  const fetchSplitTransactionsFromAPI = async () => {
+    const data = {
+      email: email,
+      password: password,
+    };
+    console.log("user ", userId)
+    const url = 'https://karchu.onrender.com/v2/split-transaction/get-splits';
     const options: RequestInit = {
       method: 'POST',
       headers: {
@@ -42,43 +67,17 @@ const CategoryContainer: React.FC = () => {
     try {
       const response = await fetch(url, options);
       const data: [] = await response.json();
-      setCategories(data);
+      setSplitTransactions(data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  }
 
-  const fetchTransactionsFromAPI = async () => {
-    console.log("user id", userId)
-    if( email == null || password == null){
-      console.log("invalid cred: email:",email, " password:", password)
-    }
-    const data = {
-      email: email,
-      password: password,
-    };
-
-    const url = 'https://karchu.onrender.com/v1/transactions/get';
-    const options: RequestInit = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: data ? JSON.stringify(data) : null,
-    };
-
-    try {
-      const response = await fetch(url, options);
-      const data: [] = await response.json();
-      setTransactions(data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
   const fetchData = async () => {
     try {
-      await fetchCategoriesFromAPI();
-      await fetchTransactionsFromAPI();
+      await fetchMoneyLentToFriends();
+      await fetchSplitTransactionsFromAPI();
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -89,17 +88,20 @@ const CategoryContainer: React.FC = () => {
 
   return (
     <div>
-      <div className="flex">
+      {loading ? (
+        <Skeleton className='mx-60 h-screen' />
+      ) : (
+        <div className="flex">
           <div className='lg:w-1/3 sm:w-full'>
-        <CategoryTable categories={categories} email={email} password={password} fetchTransactions={fetchCategoriesFromAPI} />
-
+             <FriendTransactions transactions={moneyLentToFriend} email={email} password={password} fetchTransactions={fetchMoneyLentToFriends} />
           </div>
           <div className='lg:w-2/3 sm:w-full'>
-          <Transactions transactions={transactions} email={email} password={password} fetchTransactions={fetchTransactionsFromAPI} />
+            <SplitTransactions transactions={splitTransactions} email={email} password={password} fetchTransactions={fetchSplitTransactionsFromAPI} />
           </div>
         </div>
+      )}
     </div>
   );
 };
 
-export default CategoryContainer;
+export default FriendsContainer;

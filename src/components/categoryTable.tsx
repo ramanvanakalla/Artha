@@ -173,8 +173,11 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
     return (
       <>
       < this.newCategory></this.newCategory>
-      <div className=" flex lg:flex-row sm:flex-col">
-        <div className='lg:w-1/3 sm:w-full'>
+      <div className="w-full grid justify-items-end my-2">
+                <Button onClick={()=> this.setState({openNewCatDialog:true})}>
+                    <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Category
+                </Button>
+            </div>
           {
              this.state.categories.length === 0 ?
                 <div className="flex items-center justify-center my-4">
@@ -219,15 +222,7 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
               </Table>
           }
             
-        </div>
-        <div className='w-2/3 mx-4'>
-            <div className="w-full grid justify-items-end my-2">
-                <Button onClick={()=> this.setState({openNewCatDialog:true})}>
-                    <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Category
-                </Button>
-            </div>
-        </div>
-      </div>
+            
     </>
     );
   }

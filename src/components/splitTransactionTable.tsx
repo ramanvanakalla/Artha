@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   DotsHorizontalIcon,
+  PlusCircledIcon
 } from "@radix-ui/react-icons"
 
 import {
@@ -85,7 +86,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
     this.state = {
       email: props.email,
       password: props.password,
-      splitTransactions: props.transactions,
+      splitTransactions: props.transactions,  
       openDeleteDialog: false,
       openEditDialog: false,
       openDeleteSplitsDialog: false,
@@ -192,8 +193,8 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
 
     return (
       <>
-      <div className="flex">
-      <AlertDialog open={this.state.openDeleteDialog}>
+      { this.state.openDeleteDialog && 
+        <AlertDialog open={this.state.openDeleteDialog}>
         <AlertDialogTrigger>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -217,70 +218,80 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
           </AlertDialogFooter>
         </AlertDialogContent>
         </AlertDialog>
-
+      }
+      
+      { this.state.openEditDialog &&
         <Dialog open={this.state.openEditDialog}>
-          <DialogTrigger asChild>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit Transaction</DialogTitle>
-              <DialogDescription>
-                Make changes to your transaction here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              {
-                Object.entries(this.state.currentTransaction).map(([key, value]) => (
-                  <div key={key} className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor={key} className="text-right">
-                      {key}
-                    </Label>
-                    <Input id={key} value={value} className="col-span-3" />
-                  </div>
-                ))
-              }
-            </div> 
-            <DialogFooter>
-                  <Button type="button" variant="secondary" onClick={()=> this.setState({openEditDialog:false})}>
-                    Close
-                  </Button>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        <AlertDialog open={this.state.openDeleteSplitsDialog}>
-        <AlertDialogTrigger>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete splits of this transaction?</AlertDialogTitle>
-            <AlertDialogDescription>
-              `This action cannot be undone. This will permanently delete splits of this transaction: 
-              Category <span className="font-bold">{this.state.currentTransaction.CategoryName}</span> and Amount <span className="font-bold">{this.state.currentTransaction.Amount}</span>`
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={()=>{
-                          this.setState({openDeleteSplitsDialog: false})
-                          }}>
-                            Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={()=>{
-                          this.setState({openDeleteSplitsDialog: false})
-                          this.DeleteSplitsOfTransaction(this.state.currentTransaction.SplitTransactionId)
-                          }}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        </AlertDialog>
-      <div className='w-full lg:mx-56'>
+        <DialogTrigger asChild>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Transaction</DialogTitle>
+            <DialogDescription>
+              Make changes to your transaction here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {
+              Object.entries(this.state.currentTransaction).map(([key, value]) => (
+                <div key={key} className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor={key} className="text-right">
+                    {key}
+                  </Label>
+                  <Input id={key} value={value} className="col-span-3" />
+                </div>
+              ))
+            }
+          </div> 
+          <DialogFooter>
+                <Button type="button" variant="secondary" onClick={()=> this.setState({openEditDialog:false})}>
+                  Close
+                </Button>
+            <Button type="submit">Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      }
+        
+      { this.state.openDeleteSplitsDialog && 
+          <AlertDialog open={this.state.openDeleteSplitsDialog}>
+          <AlertDialogTrigger>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete splits of this transaction?</AlertDialogTitle>
+              <AlertDialogDescription>
+                `This action cannot be undone. This will permanently delete splits of this transaction: 
+                Category <span className="font-bold">{this.state.currentTransaction.CategoryName}</span> and Amount <span className="font-bold">{this.state.currentTransaction.Amount}</span>`
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={()=>{
+                            this.setState({openDeleteSplitsDialog: false})
+                            }}>
+                              Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={()=>{
+                            this.setState({openDeleteSplitsDialog: false})
+                            this.DeleteSplitsOfTransaction(this.state.currentTransaction.SplitTransactionId)
+                            }}>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+          </AlertDialog>
+      }
+      <div className="w-full grid justify-items-end my-2">
+        <Button>
+          <PlusCircledIcon className="mr-2 h-4 w-4" /> Split Transaction
+        </Button>
+      </div>  
+      <div>
         {
             this.state.splitTransactions.length === 0 ?
             <div className="flex items-center justify-center my-4">
               <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Split Transactions</p>
             </div>
             :
-            <Table>
+            <Table className='border-collapse border-l w-full'>
                 <TableHeader>
                     {this.headers.map((h) => (
                       (h == "Amount" || h == "NetAmount") ?  <TableHead className='text-right' key={h}>{h}</TableHead> :
@@ -289,7 +300,6 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                 </TableHeader>
                   <TableBody>
                     {this.state.splitTransactions.map((transaction) => {  
-                        console.log(transaction.SettledTransactionId)          
                       return (
                         <TableRow key={transaction.SplitTransactionId}>
                             <TableCell className=" text-center">{transaction.FriendName}</TableCell>
@@ -344,7 +354,6 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
         
       </div>
       
-    </div>
                             
       </>
     );
