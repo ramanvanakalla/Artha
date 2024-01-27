@@ -9,7 +9,8 @@ const FriendsContainer: React.FC = () => {
   const [moneyLentToFriend, setMoneyLentToFriend] = useState([]);
   const [splitTransactions, setSplitTransactions] = useState([]);
 
-  const [loading, setLoading] = useState(true);
+  const [friendsloaded, setFriendsloaded] = useState(false);
+  const [splitsLoaded, setSplitsLoaded] = useState(false);
   const {
     email: contextEmail,
     password: contextPassword,
@@ -44,7 +45,7 @@ const FriendsContainer: React.FC = () => {
       const response = await fetch(url, options);
       const data: [] = await response.json();
       setMoneyLentToFriend(data);
-      setLoading(false);
+      setFriendsloaded(true);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -68,7 +69,7 @@ const FriendsContainer: React.FC = () => {
       const response = await fetch(url, options);
       const data: [] = await response.json();
       setSplitTransactions(data);
-      setLoading(false);
+      setSplitsLoaded(true);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -88,18 +89,24 @@ const FriendsContainer: React.FC = () => {
 
   return (
     <div>
-      {loading ? (
-        <Skeleton className='mx-60 h-screen' />
-      ) : (
         <div className="flex">
           <div className='lg:w-1/3 sm:w-full'>
-             <FriendTransactions transactions={moneyLentToFriend} email={email} password={password} fetchTransactions={fetchMoneyLentToFriends} />
+            {
+              friendsloaded ?
+                <FriendTransactions transactions={moneyLentToFriend} email={email} password={password} fetchTransactions={fetchMoneyLentToFriends} />
+              :
+                <Skeleton className='h-screen'></Skeleton>
+            }
           </div>
           <div className='lg:w-2/3 sm:w-full'>
-            <SplitTransactions transactions={splitTransactions} email={email} password={password} fetchTransactions={fetchSplitTransactionsFromAPI} />
+            {
+              splitsLoaded ?
+                  <SplitTransactions transactions={splitTransactions} email={email} password={password} fetchTransactions={fetchSplitTransactionsFromAPI} />
+              :
+                  <Skeleton className='h-screen'></Skeleton>
+            }
           </div>
         </div>
-      )}
     </div>
   );
 };

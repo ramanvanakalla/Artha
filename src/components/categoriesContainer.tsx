@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Transactions from './transactionTable.tsx'; 
 import CategoryTable from './categoryTable';
 import { useUserContext } from './userContext.tsx'; 
+import { Skeleton } from './ui/skeleton.tsx';
+
 
 const CategoryContainer: React.FC = () => {
   const [categories, setCategories] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [ categoriesLoaded, setCategoriesLoaded] = useState(false)
+  const [ transactionsLoaded, setTransactionsLoaded] = useState(false)
+
   const {
     email: contextEmail,
     password: contextPassword,
@@ -43,6 +48,7 @@ const CategoryContainer: React.FC = () => {
       const response = await fetch(url, options);
       const data: [] = await response.json();
       setCategories(data);
+      setCategoriesLoaded(true)
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -71,6 +77,7 @@ const CategoryContainer: React.FC = () => {
       const response = await fetch(url, options);
       const data: [] = await response.json();
       setTransactions(data);
+      setTransactionsLoaded(true);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -91,11 +98,20 @@ const CategoryContainer: React.FC = () => {
     <div>
       <div className="flex">
           <div className='lg:w-1/3 sm:w-full'>
-        <CategoryTable categories={categories} email={email} password={password} fetchTransactions={fetchCategoriesFromAPI} />
-
+            { 
+              categoriesLoaded ? 
+                <CategoryTable categories={categories} email={email} password={password} fetchTransactions={fetchCategoriesFromAPI} />
+              :
+                <Skeleton className='h-screen' />
+            }
           </div>
           <div className='lg:w-2/3 sm:w-full'>
-          <Transactions transactions={transactions} email={email} password={password} fetchTransactions={fetchTransactionsFromAPI} />
+            {
+              transactionsLoaded ?
+                <Transactions transactions={transactions} email={email} password={password} fetchTransactions={fetchTransactionsFromAPI} />
+              :
+                <Skeleton className='h-screen' />
+            }
           </div>
         </div>
     </div>
