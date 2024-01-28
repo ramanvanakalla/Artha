@@ -8,6 +8,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import LoadingComponent from './loading';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import numeral from 'numeral';
@@ -59,7 +71,8 @@ interface TransactionsState {
   openNewCatDialog: boolean;
   newCategory: NewCategory;
   email: string|null;
-  password: string|null
+  password: string|null;
+  loading:boolean;
 }
 
 class CategoryTable extends Component<TransactionsProps, TransactionsState> {
@@ -79,7 +92,8 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
           category: ""
         },
         email: props.email,
-        password: props.password
+        password: props.password,
+        loading: false
     };
   }
 
@@ -95,6 +109,85 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
     "Amount Spent",
     "Actions"
   ]
+
+  
+
+  deleteCategory = ()=>{
+    const DeleteCat = ()=>{
+      
+      this.setState({loading:true})
+
+      const url = "https://karchu.onrender.com/v1/categories/";
+    const req = {
+      email: this.state.email,
+      password: this.state.password,
+      categoryName: this.state.currentCategory.Category
+    };
+
+    const options: RequestInit = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: req ? JSON.stringify(req) : null,
+    };
+    fetch(url, options)
+    .then((response) => response.json())
+    .then((data: { success_code?: string; error_code?: string; success_message?: string; error_message?: string }) => {
+      console.log(data)
+      if (data.success_code) {
+        toast.success(data.success_message)
+      } else if (data.error_code) {
+        toast.error(data.error_message)
+      } else {
+        console.error('Unexpected response format:', data);
+      }
+      this.props.fetchTransactions();
+    })
+    .catch((error) => {
+      console.error('Error fetching data:', error);
+    })
+    .finally(()=>{
+      setTimeout(() => {
+        this.setState({
+          currentCategory: {
+            Category: "",
+            NetAmount: 0
+          },
+          loading: false
+        });
+      }, 500);
+    })
+    }
+    return(
+      <AlertDialog open={this.state.openDeleteDialog}>
+      <AlertDialogTrigger>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete this transaction?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete this Category: 
+             <span className="font-bold">{this.state.currentCategory.Category}</span> net transaction amount is
+              <span className="font-bold">{this.state.currentCategory.NetAmount}</span>. <br/>
+              This will not delete the transactions related to this category but those will be orphaned
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={()=>{
+                        this.setState({openDeleteDialog: false})
+                        }}>
+                          Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={()=>{
+                        this.setState({openDeleteDialog: false})
+                        DeleteCat()
+                        }}>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+      </AlertDialog>
+    )
+  }
 
   newCategory = ()=>{
 
@@ -175,7 +268,10 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
     return (
       <>
       <div>
-      < this.newCategory></this.newCategory>
+      <LoadingComponent loading={this.state.loading}></LoadingComponent>
+      {this.state.openNewCatDialog && < this.newCategory></this.newCategory> }
+      { this.state.openDeleteDialog &&  <this.deleteCategory /> }
+     
       <div className="w-full grid justify-items-end my-2">
                 <Button onClick={()=> this.setState({openNewCatDialog:true})}>
                     <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Category
@@ -214,7 +310,7 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
                                           </DropdownMenuTrigger>
                                           <DropdownMenuContent align="end">
                                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                              <DropdownMenuItem >New Category</DropdownMenuItem>
+                                              <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog: true, currentCategory: category})}}>Delete Category</DropdownMenuItem>
                                           </DropdownMenuContent>
                                       </DropdownMenu>
                                   </div>

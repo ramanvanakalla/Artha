@@ -780,16 +780,16 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                         <TableCell className="w-1/6 text-center">{time}</TableCell>
                         <TableCell className="w-1/6 text-center">{transaction.CategoryName}</TableCell>
                         { transaction.Amount < 0 ? 
-                            <TableCell className="w-1/12 text-right text-green-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
+                            <TableCell className="w-1/12 text-right text-green-600">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
                           :
-                          <TableCell className="w-1/12 text-right  text-red-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
+                          <TableCell className="w-1/12 text-right  text-red-600">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
                         }
                         <TableCell className="w-1/6 text-center">{transaction.Description}</TableCell>
                         <TableCell className="w-1/6 text-center">
                           {
                             (transaction.SplitTag == "will split") ?
                             (
-                              <div className='flex items-center justify-center text-red-400'>
+                              <div className='flex items-center justify-center text-yellow-700'>
                                             <TimerIcon />
                                             <span className='px-2'> {transaction.SplitTag} </span>
                               </div>
@@ -802,8 +802,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                               </div>
                             )
                           }
-                          
-                          
                         </TableCell>
                         <TableCell className="w-1/12">
                           <div className='flex items-center justify-center'>
