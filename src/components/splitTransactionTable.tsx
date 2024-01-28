@@ -290,7 +290,7 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
         {
             this.state.splitTransactions.length === 0 ?
             <div className="flex items-center justify-center my-4">
-              <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Split Transactions</p>
+              <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Split a transaction !!</p>
             </div>
             :
             <ScrollArea className="h-screen w-full rounded-md border">

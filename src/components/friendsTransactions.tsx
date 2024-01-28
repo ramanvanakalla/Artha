@@ -256,7 +256,7 @@ class FriendTransactions extends Component<TransactionsProps, TransactionsState>
         {
             this.state.moneyFriendTransactions.length === 0 ?
             <div className="flex items-center justify-center my-4">
-              <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Split Transactions</p>
+              <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add Friend</p>
             </div>
             :
             <ScrollArea className="h-screen w-full rounded-md border">
