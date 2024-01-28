@@ -757,7 +757,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
               <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add your first transaction</p>
           </div>
           :
-          <ScrollArea className="h-[475px] w-full rounded-md border">
+          <ScrollArea className="h-screen w-full rounded-md border">
             <Table className='border-collapse border-l w-full'>
             <TableHeader>
               {this.headers.map((header) => (

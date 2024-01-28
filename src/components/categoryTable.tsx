@@ -187,7 +187,7 @@ class CategoryTable extends Component<TransactionsProps, TransactionsState> {
                     <p className="leading-7 [&:not(:first-child)]:mt-6 mx-au"> Add Category </p>
                 </div>
              :
-             <ScrollArea className='h-[475px] w-full rounded-md border' style={{ overflow: 'auto' }}>
+             <ScrollArea className='h-screen w-full rounded-md border' style={{ overflow: 'auto' }}>
                 <Table className='w-full border-collapse border-l'>
                   <TableHeader>
                       <TableRow>
