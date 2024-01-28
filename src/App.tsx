@@ -23,7 +23,7 @@ function App() {
       <Toaster richColors position="top-center" className="block sm:hidden md:hidden lg:hidden" />
       <BrowserRouter>
       <RenderHeader></RenderHeader>
-      <div className='lg:pt-20 sm:pt-40'>
+      <div className='pt-36 lg:pt-20 md:pt-20'>
       <Routes>          
           {
             loggedIn ? (
