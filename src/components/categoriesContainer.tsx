@@ -47,6 +47,7 @@ const CategoryContainer: React.FC = () => {
     try {
       const response = await fetch(url, options);
       const data: [] = await response.json();
+      console.log(data);
       setCategories(data);
       setCategoriesLoaded(true)
     } catch (error) {
@@ -108,7 +109,7 @@ const CategoryContainer: React.FC = () => {
           <div className='lg:w-2/3 sm:w-full'>
             {
               transactionsLoaded ?
-                <Transactions transactions={transactions} email={email} password={password} fetchTransactions={fetchTransactionsFromAPI} />
+                <Transactions transactions={transactions} email={email} password={password} fetchCategories={fetchCategoriesFromAPI} fetchTransactions={fetchTransactionsFromAPI} />
               :
                 <Skeleton className='h-screen' />
             }

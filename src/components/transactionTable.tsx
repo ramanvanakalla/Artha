@@ -35,6 +35,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {
+  TimerIcon,
+  CheckCircledIcon
+} from "@radix-ui/react-icons"
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -75,10 +79,20 @@ interface newTransaction{
   SplitTag: string,
 }
 
+interface splits{
+  friendId: string,
+  amount: number
+}
+
+interface friendMap{
+  FriendId: number,
+  FriendName: string
+}
 
 interface TransactionsProps {
   transactions: Transaction[];
   fetchTransactions: ()=> void;
+  fetchCategories: ()=> void;
   email: string|null;
   password: string|null;
 }
@@ -87,6 +101,7 @@ interface TransactionsState {
   Transactions: Transaction[];
   openDeleteDialog: boolean;
   openEditDialog: boolean;
+  openSplitDialog: boolean;
   openNewDialog: boolean;
   currentTransaction: Transaction;
   openDeleteSplitsDialog: boolean;
@@ -94,9 +109,11 @@ interface TransactionsState {
   newTransactionError: string;
   categories: string[],
   splitTags: string[],
+  friends: friendMap[],
   email: string|null,
   password: string|null,
-  loading: boolean
+  loading: boolean,
+  splits: splits[]
 }
 
 
@@ -111,6 +128,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       openDeleteDialog: false,
       openEditDialog: false,
       openDeleteSplitsDialog: false,
+      openSplitDialog: false,
       openNewDialog: false,
       currentTransaction: {
         ID: 0,
@@ -129,7 +147,9 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       categories: [],
       splitTags: [],
       newTransactionError: "",
-      loading: false
+      loading: false,
+      splits: [],
+      friends: []
     };
   }
 
@@ -216,7 +236,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       } else {
         console.error('Unexpected response format:', data);
       }
-      this.props.fetchTransactions()
+      this.fetchData();
     })
     .catch((error) => {
       console.error('Error fetching data:', error);
@@ -247,6 +267,79 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     "SplitTag",
     "Action"
   ]
+
+  fetchData = async () => {
+    try {
+      await this.props.fetchTransactions();
+      await this.props.fetchCategories();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchCategories = async () => {
+    const data = {
+      email: this.state.email,
+      password: this.state.password,
+    };
+
+    const url = 'https://karchu.onrender.com/v1/categories/all';
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data ? JSON.stringify(data) : null,
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const data: [] = await response.json();
+      this.setState({categories:data})
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchSplitTags = async() => { 
+    const url = 'https://karchu.onrender.com/v1/split-tags';
+    const options: RequestInit = {
+      method: 'GET'
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const data: [] = await response.json();
+      this.setState({splitTags:data})
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  fetchFriends = async() => {
+    const data = {
+      email: this.state.email,
+      password: this.state.password,
+    };
+
+    const url = 'https://karchu.onrender.com/v2/friends/friendsMap';
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data ? JSON.stringify(data) : null,
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const data: [friendMap] = await response.json();
+      console.log(data);
+      this.setState({friends:data})
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
 
   newTransaction = () => {
     const handleInputChange = (key: string, value: string| number) => {
@@ -297,7 +390,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
           console.log(data);
           if (data.success_code) {
             toast.success(data.success_message);
-            this.props.fetchTransactions();
+            this.fetchData();
           } else if (data.error_code) {
             toast.error(data.error_message);
           } else {
@@ -322,52 +415,12 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
           }, 500); // Adjust the delay time as needed
         });
     };
-    
-    
-    const fetchCategories = async () => {
-      const data = {
-        email: this.state.email,
-        password: this.state.password,
-      };
-  
-      const url = 'https://karchu.onrender.com/v1/categories/all';
-      const options: RequestInit = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: data ? JSON.stringify(data) : null,
-      };
-  
-      try {
-        const response = await fetch(url, options);
-        const data: [] = await response.json();
-        this.setState({categories:data})
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    const fetchSplitTags = async() => { 
-      const url = 'https://karchu.onrender.com/v1/split-tags';
-      const options: RequestInit = {
-        method: 'GET'
-      };
-  
-      try {
-        const response = await fetch(url, options);
-        const data: [] = await response.json();
-        this.setState({splitTags:data})
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
   
     // Fetch categories when the dialog is opened
     React.useEffect(() => {
       if (this.state.openNewDialog) {
-        fetchCategories();
-        fetchSplitTags();
+        this.fetchCategories();
+        this.fetchSplitTags();
       }
     }, [this.state.openNewDialog, this.state.loading]);
 
@@ -537,7 +590,147 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     )
   }
 
+  splitTransaction = ()=> {
 
+    React.useEffect(() => {
+      if (this.state.openSplitDialog) {
+        this.fetchFriends();
+      }
+    }, [this.state.openSplitDialog]);
+
+    const logSplit = ()=>{  
+      this.setState({ openSplitDialog: false, loading: true });
+      const req = {
+        email: this.state.email,
+        password: this.state.password,
+        splits: this.state.splits,
+        transactionId: this.state.currentTransaction.ID
+      }
+      const url = 'https://karchu.onrender.com/v2/split-transaction';
+      const options: RequestInit = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: req ? JSON.stringify(req) : null,
+      };
+    
+      fetch(url, options)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          if (data.success_code) {
+            this.setState({openSplitDialog:false})
+            this.props.fetchTransactions()
+            toast.success(data.success_message);
+          } else if (data.error_code) {
+            toast.error(data.error_message);
+          } else {
+            console.error('Unexpected response format:', data);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        })
+        .finally(() => {
+          // Introduce a small delay before setting loading to false
+          setTimeout(() => {
+            this.setState({
+              openSplitDialog: false,
+              splits: [],
+              loading: false
+            });
+          }, 500); // Adjust the delay time as needed
+        });
+    }
+
+    const handleInputChange = (index: number, type: string, value: number|string) => {
+      this.setState((prevState) => {
+        const updatedSplits = [...prevState.splits];
+        if (index >= 0 && index < updatedSplits.length) {
+          updatedSplits[index] = {
+            ...updatedSplits[index],
+            [type]: Number(value),
+          };
+        }
+        return { splits: updatedSplits };
+      });
+    };
+
+    return(
+      <Dialog open={this.state.openSplitDialog}>
+          <DialogTrigger asChild>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader className='flex flex-row justify-between'>
+              <div>
+                <DialogTitle>Split Transaction</DialogTitle>
+              </div>
+              <div>
+                <Button onClick={()=>{
+                  this.setState((prevState) => ({
+                    splits: [
+                      ...prevState.splits,
+                      { 
+                        friendId: "",
+                        amount: 0
+                      }
+                    ]
+                  }));
+                  console.log(this.state.splits);
+                }}>
+                    <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Friend Split
+                </Button>
+              </div>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {
+                <>
+                  <div key={"Me"} className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor={"Me"} className="text-right col-span-2  ">
+                        {"Me"}
+                      </Label>
+                      <Input id={"My Value"} value={this.state.currentTransaction.Amount} className="col-span-2" />
+                  </div>
+                  {
+                    this.state.splits.map((split,index)=>(
+                    <div  key={index} className="grid grid-cols-4 items-center gap-4">
+                    <Select onValueChange={(value)=>{handleInputChange(index, "friendId", value)} } >
+                      <SelectTrigger className="col-span-2">
+                        <SelectValue placeholder="Select a friend" />
+                      </SelectTrigger>
+                      <SelectContent className='p-0 max-h-[250px] overflow-auto'>
+                        <SelectGroup>
+                          <SelectLabel>Friends</SelectLabel>
+                          {this.state.friends.map((friend) => (
+                            <SelectItem value={String(friend.FriendId)}>{friend.FriendName}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Input id={split.friendId} value={split.amount} className="col-span-2" onChange={(e)=> {handleInputChange(index, "amount", e.target.value)}} />
+                    </div>
+                    ))
+                  }
+                </>
+                  
+              }
+            </div> 
+            <DialogFooter>
+                  <Button type="button" variant="secondary" onClick={()=> { 
+                      this.setState({
+                        openSplitDialog:false,
+                        splits: []
+                      })  
+                    }}>
+                    Close
+                  </Button>
+              <Button type="submit" onClick={()=> {logSplit()}}>Log Split</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+    )
+  }
   
 
   render() {
@@ -551,7 +744,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         { this.state.openEditDialog && <this.editTransaction /> }
         { this.state.openDeleteDialog && <this.deleteSplit /> }
         { this.state.openDeleteDialog && <this.deleteTransaction /> }
-        
+        { this.state.openSplitDialog && <this.splitTransaction/>}
        
        <div className="w-full grid justify-items-end my-2">
        <Button onClick={()=> this.setState({openNewDialog:true})}>
@@ -592,7 +785,26 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                           <TableCell className="w-1/12 text-right  text-red-400">₹{numeral(transaction.Amount).format('0,0.00')}</TableCell>
                         }
                         <TableCell className="w-1/6 text-center">{transaction.Description}</TableCell>
-                        <TableCell className="w-1/6 text-center">{transaction.SplitTag}</TableCell>
+                        <TableCell className="w-1/6 text-center">
+                          {
+                            (transaction.SplitTag == "will split") ?
+                            (
+                              <div className='flex items-center justify-center text-red-400'>
+                                            <TimerIcon />
+                                            <span className='px-2'> {transaction.SplitTag} </span>
+                              </div>
+                            )
+                            :
+                            (
+                              <div className='flex items-center justify-center text-green-600'>
+                                            <CheckCircledIcon></CheckCircledIcon>
+                                            <span className='px-2'> {transaction.SplitTag} </span>
+                              </div>
+                            )
+                          }
+                          
+                          
+                        </TableCell>
                         <TableCell className="w-1/12">
                           <div className='flex items-center justify-center'>
                             <DropdownMenu>
@@ -608,9 +820,9 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                                 <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Delete Transaction</DropdownMenuItem>
                                 <DropdownMenuItem onClick={()=>{this.setState({openDeleteSplitsDialog:true, currentTransaction: transaction})}}>Delete Splits</DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>Split Transaction</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>{this.setState({openSplitDialog:true, currentTransaction: transaction})}}>Split Transaction</DropdownMenuItem>
                                 <DropdownMenuItem>View Splits</DropdownMenuItem>
-                              </DropdownMenuContent>
+                              </DropdownMenuContent>  
                             </DropdownMenu>
                           </div>
                         </TableCell>
