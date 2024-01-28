@@ -148,7 +148,9 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       splitTags: [],
       newTransactionError: "",
       loading: false,
-      splits: [],
+      splits: [
+        { friendId: "", amount: 0}
+      ],
       friends: []
     };
   }
@@ -637,7 +639,9 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
           setTimeout(() => {
             this.setState({
               openSplitDialog: false,
-              splits: [],
+              splits: [
+                {friendId: "", amount: 0}
+              ],
               loading: false
             });
           }, 500); // Adjust the delay time as needed
@@ -720,7 +724,9 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                   <Button type="button" variant="secondary" onClick={()=> { 
                       this.setState({
                         openSplitDialog:false,
-                        splits: []
+                        splits:[
+                        {friendId: "", amount: 0}
+                        ]
                       })  
                     }}>
                     Close
@@ -742,7 +748,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       <div>       
         { this.state.openNewDialog &&<this.newTransaction /> }
         { this.state.openEditDialog && <this.editTransaction /> }
-        { this.state.openDeleteDialog && <this.deleteSplit /> }
+        { this.state.openDeleteSplitsDialog && <this.deleteSplit /> }
         { this.state.openDeleteDialog && <this.deleteTransaction /> }
         { this.state.openSplitDialog && <this.splitTransaction/>}
        
