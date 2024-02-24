@@ -54,11 +54,18 @@ export function DatePickerWithRange({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={(selected) => {
-                if (selected && selected.from && selected.to) {
-                    setStartDate(selected.from);
-                    setEndDate(selected.to);
-                    setDate(selected); // Update the local state variable
+               onSelect={(selected) => {
+                console.log(selected)
+                setDate(selected);
+                if (selected) {
+                    if(selected.to) 
+                        setEndDate(selected.to)
+                    else if(selected.from)
+                        setEndDate(selected.from)
+                    if(selected.from)
+                        setStartDate(selected.from)
+                    else if(selected.to)
+                        setStartDate(selected.to)
                   }
             }}
             numberOfMonths={2}
