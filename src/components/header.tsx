@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
 import Profile from './profile';
+import { DatePickerWithRange } from './dateRange';
 
 const Headers = () => {
   const location = useLocation();
-
   return (
     <div className="navigation py-4 mx-0 shadow-sm top-0 w-full fixed bg-white z-10">
       <nav className='flex'>
@@ -17,6 +17,7 @@ const Headers = () => {
               <Link to="/splits" className={`text-center text-sm ${location.pathname === '/splits' ? 'text-black' : 'text-slate-500'} hover:text-black font-sans`}>Friends & Splits</Link>
             </li>
           </ul>
+          <DatePickerWithRange></DatePickerWithRange>
           <div className='mx-4'>
             <Profile></Profile>
           </div>

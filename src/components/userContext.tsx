@@ -5,7 +5,11 @@ interface UserContextProps {
   password: string | null;
   userId: number | null;
   loggedIn: boolean;
+  startDate: Date;
+  endDate: Date
   setCredentials: (email: string| null, password: string| null, userId: number| null, loggedIn: boolean) => void;
+  setStartDate: (startDate: Date)=> void;
+  setEndDate: (endDate: Date) => void
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -20,6 +24,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const userIdString = localStorage.getItem('userId');
   const userIdNumber = userIdString ? parseInt(userIdString, 10) : null;
   const [userId, setUserId] = useState<number | null>(userIdNumber);
+  const today = new Date();
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  const [startDate, setStartDate] = useState<Date>(thirtyDaysAgo)
+  const [endDate, setEndDate] = useState<Date>(today)
   let initLoggedInState = false;
   if (userIdNumber !== 0 && userIdNumber !== null && typeof userIdNumber === 'number') {
     initLoggedInState = true;
@@ -67,7 +76,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     password,
     userId,
     loggedIn,
+    startDate,
+    endDate,
     setCredentials,
+    setStartDate,
+    setEndDate
   };
 
   return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;

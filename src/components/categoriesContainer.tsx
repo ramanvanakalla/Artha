@@ -15,27 +15,35 @@ const CategoryContainer: React.FC = () => {
     email: contextEmail,
     password: contextPassword,
     userId: contextUserId,
-    loggedIn: contextLoggedIn
+    loggedIn: contextLoggedIn,
+    startDate: contextStartDate,
+    endDate: contextEndDate,
   } = useUserContext();
   const [loggedIn, setLoggedIn] = useState<boolean>(contextLoggedIn);
   const [email, setEmail] = useState<string|null>(contextEmail);
   const [password, setPassword] = useState<string|null>(contextPassword);
   const [userId, setUserId] = useState<number|null>(contextUserId);
+  const [ startDate, setStartDate] = useState<Date>(contextStartDate)
+  const [ endDate, setEndDate] = useState<Date>(contextEndDate)
   useEffect(() => {
     setLoggedIn(contextLoggedIn);
     setEmail(contextEmail);
     setPassword(contextPassword);
     setUserId(contextUserId);
-  }, [contextLoggedIn, contextEmail, contextPassword, contextUserId]);
+    setStartDate(contextStartDate);
+    setEndDate(contextEndDate);
+  }, [contextLoggedIn, contextEmail, contextPassword, contextUserId, contextStartDate, contextEndDate]);
 
   const fetchCategoriesFromAPI = async () => {
     console.log("user id", userId)
     const data = {
       email: email,
       password: password,
+      startDate: startDate.toISOString().substring(0, 10),
+      endDate: endDate.toISOString().substring(0, 10)
     };
 
-    const url = 'https://karchu.onrender.com/v1/net-amount/';
+    const url = 'https://karchu.onrender.com/v1/net-amount/filtered';
     const options: RequestInit = {
       method: 'POST',
       headers: {
@@ -63,9 +71,12 @@ const CategoryContainer: React.FC = () => {
     const data = {
       email: email,
       password: password,
+      startDate: startDate.toISOString().substring(0, 10),
+      endDate: endDate.toISOString().substring(0, 10)
     };
+    console.log(data)
 
-    const url = 'https://karchu.onrender.com/v1/transactions/get';
+    const url = 'https://karchu.onrender.com/v1/transactions/filtered'
     const options: RequestInit = {
       method: 'POST',
       headers: {
@@ -93,7 +104,7 @@ const CategoryContainer: React.FC = () => {
   };
   useEffect(() => {
     fetchData();
-  }, [loggedIn, email, password]);
+  }, [loggedIn, email, password, startDate, endDate]);
 
   return (
     <div>
