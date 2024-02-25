@@ -28,7 +28,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const start = new Date(today);
   start.setDate(today.getDate() - 30);
   const [startDate, setStartDate] = useState<Date>(start)
-  const [endDate, setEndDate] = useState<Date>(today)
+  const nextDay = new Date(today);
+  nextDay.setDate(today.getDate()+1)
+  const [endDate, setEndDate] = useState<Date>(nextDay)
+  console.log(endDate)
   let initLoggedInState = false;
   if (userIdNumber !== 0 && userIdNumber !== null && typeof userIdNumber === 'number') {
     initLoggedInState = true;
