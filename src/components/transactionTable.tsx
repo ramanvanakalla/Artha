@@ -185,11 +185,9 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       },
       body: req ? JSON.stringify(req) : null,
     };
-    console.log(JSON.stringify(req))
     fetch(url, options)
     .then((response) => response.json())
     .then((data: { success_code?: string; error_code?: string; success_message?: string; error_message?: string }) => {
-      console.log(data)
       if (data.success_code) {
         toast.success(data.success_message)
       } else if (data.error_code) {
@@ -237,7 +235,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     fetch(url, options)
     .then((response) => response.json())
     .then((data: { success_code?: string; error_code?: string; success_message?: string; error_message?: string }) => {
-      console.log(data)
       if (data.success_code) {
         toast.success(data.success_message)
       } else if (data.error_code) {
@@ -343,7 +340,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     try {
       const response = await fetch(url, options);
       const data: [friendMap] = await response.json();
-      console.log(data);
       this.setState({friends:data})
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -396,7 +392,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       fetch(url, options)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           if (data.success_code) {
             toast.success(data.success_message);
             this.fetchData();
@@ -627,7 +622,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       fetch(url, options)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           if (data.success_code) {
             this.setState({openSplitDialog:false})
             this.props.fetchTransactions()
@@ -688,7 +682,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                       }
                     ]
                   }));
-                  console.log(this.state.splits);
                 }}>
                     <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Friend Split
                 </Button>
@@ -748,7 +741,6 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
 
   render() {
   
-    console.log(this.state.selectedCategories)
     return (
       <>
       <LoadingComponent loading={this.state.loading}></LoadingComponent>
@@ -775,7 +767,8 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
           display="chip"
           placeholder="Filter Category"
           maxSelectedLabels={7}
-          className="w-full md:w-20rem"
+          className="w-full md:w-20rem text-sm"
+          itemClassName='text-sm bg-slate-100'
         />
 
         </div>
