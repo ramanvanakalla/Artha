@@ -1,4 +1,5 @@
 import React,{ Component } from 'react';
+import { MultiSelect } from 'primereact/multiselect';
 import {
   Table,
   TableBody,
@@ -93,8 +94,10 @@ interface TransactionsProps {
   transactions: Transaction[];
   fetchTransactions: ()=> void;
   fetchCategories: ()=> void;
+  setCategoryFilters: React.Dispatch<React.SetStateAction<string[]>>;
   email: string|null;
   password: string|null;
+  categoryNames: {name: string}[]
 }
 
 interface TransactionsState {
@@ -113,7 +116,9 @@ interface TransactionsState {
   email: string|null,
   password: string|null,
   loading: boolean,
-  splits: splits[]
+  splits: splits[],
+  categoryNames: {name: string}[],
+  selectedCategories: {name: string}[]
 }
 
 
@@ -125,6 +130,8 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       Transactions: props.transactions,
       email: props.email,
       password: props.password,
+      categoryNames: props.categoryNames,
+      selectedCategories: [],
       openDeleteDialog: false,
       openEditDialog: false,
       openDeleteSplitsDialog: false,
@@ -741,7 +748,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
 
   render() {
   
-
+    console.log(this.state.selectedCategories)
     return (
       <>
       <LoadingComponent loading={this.state.loading}></LoadingComponent>
@@ -751,12 +758,34 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         { this.state.openDeleteSplitsDialog && <this.deleteSplit /> }
         { this.state.openDeleteDialog && <this.deleteTransaction /> }
         { this.state.openSplitDialog && <this.splitTransaction/>}
-       
-       <div className="w-full grid justify-items-end my-2">
-       <Button onClick={()=> this.setState({openNewDialog:true})}>
-          <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Transaction
-       </Button>
+        <div className='flex'>
+        <div className="w-3/4 card flex justify-content-center mx-4">
+        <MultiSelect
+          value={this.state.selectedCategories}
+          onChange={(e) => {
+            this.setState(() => ({
+              selectedCategories: e.value,
+            }));
+            this.props.setCategoryFilters(
+              e.value.map((category: { name: string }) => category.name)
+            );
+          }}
+          options={this.state.categoryNames}
+          optionLabel="name"
+          display="chip"
+          placeholder="Filter Category"
+          maxSelectedLabels={7}
+          className="w-full md:w-20rem"
+        />
+
+        </div>
+       <div className="w-1/4 flex justify-end my-2">
+          <Button onClick={()=> this.setState({openNewDialog:true})}>
+            <PlusCircledIcon className="mr-2 h-4 w-4" /> Add Transaction
+          </Button>            
        </div>
+        </div>
+        
        {
           this.state.Transactions.length === 0 ?
           <div className="flex items-center justify-center my-4">

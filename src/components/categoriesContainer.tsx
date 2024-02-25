@@ -4,13 +4,18 @@ import CategoryTable from './categoryTable';
 import { useUserContext } from './userContext.tsx'; 
 import { Skeleton } from './ui/skeleton.tsx';
 
+interface Category {
+  Category: string;
+  NetAmount: number;
+}
 
 const CategoryContainer: React.FC = () => {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState([]);
   const [ categoriesLoaded, setCategoriesLoaded] = useState(false)
   const [ transactionsLoaded, setTransactionsLoaded] = useState(false)
-
+  const [ categoryNames, setCategoryNames] = useState<{name: string}[]>([])
+  const [ categoryFilters, setCategoryFilters ] = useState<string[]>([])
   const {
     email: contextEmail,
     password: contextPassword,
@@ -23,8 +28,8 @@ const CategoryContainer: React.FC = () => {
   const [email, setEmail] = useState<string|null>(contextEmail);
   const [password, setPassword] = useState<string|null>(contextPassword);
   const [userId, setUserId] = useState<number|null>(contextUserId);
-  const [ startDate, setStartDate] = useState<Date>(contextStartDate)
-  const [ endDate, setEndDate] = useState<Date>(contextEndDate)
+  const [startDate, setStartDate] = useState<Date>(contextStartDate)
+  const [endDate, setEndDate] = useState<Date>(contextEndDate)
   useEffect(() => {
     setLoggedIn(contextLoggedIn);
     setEmail(contextEmail);
@@ -54,8 +59,10 @@ const CategoryContainer: React.FC = () => {
 
     try {
       const response = await fetch(url, options);
-      const data: [] = await response.json();
+      const data: Array<Category> = await response.json();
       console.log(data);
+      const categoryNames: { name: string }[] = data.map(item => ({ name: item.Category }));
+      setCategoryNames(categoryNames)
       setCategories(data);
       setCategoriesLoaded(true)
     } catch (error) {
@@ -72,7 +79,8 @@ const CategoryContainer: React.FC = () => {
       email: email,
       password: password,
       startDate: startDate.toISOString().substring(0, 10),
-      endDate: endDate.toISOString().substring(0, 10)
+      endDate: endDate.toISOString().substring(0, 10),
+      categories: categoryFilters
     };
     console.log(data)
 
@@ -104,8 +112,9 @@ const CategoryContainer: React.FC = () => {
   };
   useEffect(() => {
     fetchData();
-  }, [loggedIn, email, password, startDate, endDate]);
+  }, [loggedIn, email, password, startDate, endDate, categoryFilters]);
 
+  console.log(categoryFilters)
   return (
     <div>
       <div className="flex">
@@ -120,7 +129,7 @@ const CategoryContainer: React.FC = () => {
           <div className='lg:w-2/3 sm:w-full'>
             {
               transactionsLoaded ?
-                <Transactions transactions={transactions} email={email} password={password} fetchCategories={fetchCategoriesFromAPI} fetchTransactions={fetchTransactionsFromAPI} />
+                <Transactions categoryNames={categoryNames} transactions={transactions} email={email} password={password} fetchCategories={fetchCategoriesFromAPI} fetchTransactions={fetchTransactionsFromAPI} setCategoryFilters={setCategoryFilters} />
               :
                 <Skeleton className='h-screen' />
             }

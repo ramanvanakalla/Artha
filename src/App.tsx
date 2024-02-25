@@ -9,6 +9,8 @@ import RenderHeader from './components/renderHeaders.tsx'
 import { useUserContext } from './components/userContext.tsx'; 
 import { Toaster } from "@/components/ui/sonner"
 import 'semantic-ui-css/semantic.min.css'
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+
 
 function App() {
   const { loggedIn: contextLoggedIn } = useUserContext();
