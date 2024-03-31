@@ -655,7 +655,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         if (index >= 0 && index < updatedSplits.length) {
           updatedSplits[index] = {
             ...updatedSplits[index],
-            [type]: Number(value),
+            [type]: Number.isNaN(parseFloat(String(value)) )? 0 : parseFloat(String(value)),
           };
         }
         return { splits: updatedSplits };
@@ -691,10 +691,10 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
               {
                 <>
                   <div key={"Me"} className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor={"Me"} className="text-right col-span-2  ">
+                      <Label htmlFor={"Me"} className="text-right col-span-2  ">  
                         {"Me"}
                       </Label>
-                      <Input id={"My Value"} value={this.state.currentTransaction.Amount} className="col-span-2" />
+                      <Input id={"My Value"} value={this.state.currentTransaction.Amount - this.state.splits.reduce((total, split) => total + split.amount, 0)} className="col-span-2" />
                   </div>
                   {
                     this.state.splits.map((split,index)=>(
