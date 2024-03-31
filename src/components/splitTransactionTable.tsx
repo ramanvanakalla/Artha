@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area"
-
+import LoadingComponent from './loading';
 import {
   Table,
   TableBody,
@@ -73,12 +73,12 @@ interface TransactionsProps {
 
 interface TransactionsState {
   splitTransactions: SplitTransaction[];
-  openDeleteDialog: boolean;
-  openEditDialog: boolean;
   currentTransaction: SplitTransaction;
-  openDeleteSplitsDialog: boolean;
+  openSettleTransaction: boolean,
+  openUnSettleTransaction: boolean,
   email: string|null;
   password: string|null;
+  loading: boolean;
 }
 
 
@@ -89,9 +89,9 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
       email: props.email,
       password: props.password,
       splitTransactions: props.transactions,  
-      openDeleteDialog: false,
-      openEditDialog: false,
-      openDeleteSplitsDialog: false,
+      openSettleTransaction: false,
+      openUnSettleTransaction: false,
+      loading: false,
       currentTransaction: {
         SplitTransactionId: 0,
         SourceTransactionId: 0,
@@ -111,29 +111,27 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
     }
   }
 
-  DeleteSplitsOfTransaction(transactionId: number){
-    console.log(transactionId)
+  settleTransaction = (splitTransactionId: number) => {
     const req = {
       email: this.state.email,
       password: this.state.password,
-      transactionId: transactionId
+      splitTransactionId: splitTransactionId
     };
-
-    const url = 'https://karchu.onrender.com/v2/split-transaction';
+    this.setState({ openSettleTransaction: false, loading: true });
+    const url = 'https://karchu.onrender.com/v2/settle';
     const options: RequestInit = {
-      method: 'DELETE',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: req ? JSON.stringify(req) : null,
     };
-    console.log(JSON.stringify(req))
     fetch(url, options)
     .then((response) => response.json())
     .then((data: { success_code?: string; error_code?: string; success_message?: string; error_message?: string }) => {
-      console.log(data)
       if (data.success_code) {
         toast.success(data.success_message)
+        this.fetchData()
       } else if (data.error_code) {
         toast.error(data.error_message)
       } else {
@@ -142,18 +140,33 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
     })
     .catch((error) => {
       console.error('Error fetching data:', error);
-    });
+    })
+    .finally(()=>{
+      setTimeout(() => {
+        this.setState({
+          loading: false,
+          currentTransaction: {
+            SplitTransactionId: 0,
+            SourceTransactionId: 0,
+            SettledTransactionId: 0,
+            CategoryName: "",
+            SourceAmount: 0,
+            Amount: 0,
+            FriendName: ""
+          }
+        });
+      }, 500);
+    })
   }
 
-  DeleteTransaction(transactionId: number){
-    console.log(transactionId)
+  UnSettleTransaction = (splitTransactionId: number) => {
     const req = {
       email: this.state.email,
       password: this.state.password,
-      transactionId: transactionId
+      splitTransactionId: splitTransactionId
     };
-
-    const url = 'https://karchu.onrender.com/v1/transactions';
+    this.setState({ openSettleTransaction: false, loading: true });
+    const url = 'https://karchu.onrender.com/v2/settle';
     const options: RequestInit = {
       method: 'DELETE',
       headers: {
@@ -161,26 +174,39 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
       },
       body: req ? JSON.stringify(req) : null,
     };
-    console.log(JSON.stringify(req))
     fetch(url, options)
     .then((response) => response.json())
     .then((data: { success_code?: string; error_code?: string; success_message?: string; error_message?: string }) => {
-      console.log(data)
       if (data.success_code) {
         toast.success(data.success_message)
+        this.fetchData()
       } else if (data.error_code) {
         toast.error(data.error_message)
       } else {
         console.error('Unexpected response format:', data);
       }
-      this.props.fetchTransactions()
-       //this.setState({ transactions: data, loading: false });
     })
     .catch((error) => {
       console.error('Error fetching data:', error);
-    });
-
+    })
+    .finally(()=>{
+      setTimeout(() => {
+        this.setState({
+          loading: false,
+          currentTransaction: {
+            SplitTransactionId: 0,
+            SourceTransactionId: 0,
+            SettledTransactionId: 0,
+            CategoryName: "",
+            SourceAmount: 0,
+            Amount: 0,
+            FriendName: ""
+          }
+        });
+      }, 500);
+    })
   }
+  
 
   headers = [
     "Friend",
@@ -190,97 +216,76 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
     "Status",
     "Action"
   ]
+  fetchData = async () => {
+    try {
+      await this.props.fetchTransactions();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  settleTransactionComponent = ()=>{
+    return(
+      <AlertDialog open={this.state.openSettleTransaction}>
+      <AlertDialogTrigger>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Settle the transaction?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Did your friend  <span className="font-bold">{this.state.currentTransaction.FriendName}</span> paid an amount of <span className="font-bold">{this.state.currentTransaction.Amount}</span> to you ??
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={()=>{
+                        this.setState({openSettleTransaction: false})
+                        }}>
+                          Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={()=>{
+                        this.setState({openSettleTransaction: false})
+                        this.settleTransaction(this.state.currentTransaction.SplitTransactionId)
+                        }}>Settle</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+      </AlertDialog>
+    )
+  }
+
+  UnsettleTransactionComponent = ()=>{
+    return(
+      <AlertDialog open={this.state.openUnSettleTransaction}>
+      <AlertDialogTrigger>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Un-Settle the transaction?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Unsettle transaction with friend  <span className="font-bold">{this.state.currentTransaction.FriendName}</span> and amount <span className="font-bold">{this.state.currentTransaction.Amount}</span> to you ??
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={()=>{
+                        this.setState({openUnSettleTransaction: false})
+                        }}>
+                          Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={()=>{
+                        this.setState({openUnSettleTransaction: false})
+                        this.UnSettleTransaction(this.state.currentTransaction.SplitTransactionId)
+                        }}>Un-Settle</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+      </AlertDialog>
+    )
+  }
 
   render() {
 
     return (
       <>
-      { this.state.openDeleteDialog && 
-        <AlertDialog open={this.state.openDeleteDialog}>
-        <AlertDialogTrigger>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Transaction?</AlertDialogTitle>
-            <AlertDialogDescription>
-              `This action cannot be undone. This will permanently delete Transaction: 
-              Category <span className="font-bold">{this.state.currentTransaction.CategoryName}</span> and Amount <span className="font-bold">{this.state.currentTransaction.Amount}</span>`
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={()=>{
-                          this.setState({openDeleteDialog: false})
-                          }}>
-                            Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={()=>{
-                          this.setState({openDeleteDialog: false})
-                          this.DeleteTransaction(this.state.currentTransaction.SplitTransactionId)
-                          }}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        </AlertDialog>
-      }
-      
-      { this.state.openEditDialog &&
-        <Dialog open={this.state.openEditDialog}>
-        <DialogTrigger asChild>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Edit Transaction</DialogTitle>
-            <DialogDescription>
-              Make changes to your transaction here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {
-              Object.entries(this.state.currentTransaction).map(([key, value]) => (
-                <div key={key} className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor={key} className="text-right">
-                    {key}
-                  </Label>
-                  <Input id={key} value={value} className="col-span-3" />
-                </div>
-              ))
-            }
-          </div> 
-          <DialogFooter>
-                <Button type="button" variant="secondary" onClick={()=> this.setState({openEditDialog:false})}>
-                  Close
-                </Button>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      }
-        
-      { this.state.openDeleteSplitsDialog && 
-          <AlertDialog open={this.state.openDeleteSplitsDialog}>
-          <AlertDialogTrigger>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete splits of this transaction?</AlertDialogTitle>
-              <AlertDialogDescription>
-                `This action cannot be undone. This will permanently delete splits of this transaction: 
-                Category <span className="font-bold">{this.state.currentTransaction.CategoryName}</span> and Amount <span className="font-bold">{this.state.currentTransaction.Amount}</span>`
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={()=>{
-                            this.setState({openDeleteSplitsDialog: false})
-                            }}>
-                              Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction onClick={()=>{
-                            this.setState({openDeleteSplitsDialog: false})
-                            this.DeleteSplitsOfTransaction(this.state.currentTransaction.SplitTransactionId)
-                            }}>Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-          </AlertDialog>
-      }
+      <LoadingComponent loading={this.state.loading}></LoadingComponent>
+      { this.state.openSettleTransaction && <this.settleTransactionComponent /> }   
+      { this.state.openUnSettleTransaction && <this.UnsettleTransactionComponent /> }    
       <div className="w-full grid justify-items-end my-2">
         <Button>
           <PlusCircledIcon className="mr-2 h-4 w-4" /> Split Transaction
@@ -339,11 +344,11 @@ class SplitTransactions extends Component<TransactionsProps, TransactionsState> 
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                     {
                                         transaction.SettledTransactionId !== 0 ?
-                                        <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Unsettle Transaction</DropdownMenuItem> 
+                                        <DropdownMenuItem onClick={()=>{this.setState({ openUnSettleTransaction: true, currentTransaction: transaction})}}>Unsettle Transaction</DropdownMenuItem> 
                                         :
-                                        <DropdownMenuItem onClick={()=>{this.setState({openEditDialog:true, currentTransaction: transaction})}}>Settle Transaction</DropdownMenuItem>               
+                                        <DropdownMenuItem onClick={()=>{this.setState({ openSettleTransaction: true, currentTransaction: transaction})}}>Settle Transaction</DropdownMenuItem>               
                                     }
-                                    <DropdownMenuItem onClick={()=>{this.setState({openDeleteDialog:true, currentTransaction: transaction})}}>Show Source Transaction</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={()=>{this.setState({ currentTransaction: transaction})}}>Show Source Transaction</DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>

@@ -351,7 +351,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       this.setState((prevState) => ({
         newTransaction: {
           ...prevState.newTransaction,
-          [key]: key === 'Amount' ? Number(value) : value,
+          [key]: key === 'Amount' ? parseFloat(String(value)) : value,
         },
       }));
       this.setState({newTransactionError:""});
