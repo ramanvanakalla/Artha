@@ -78,6 +78,7 @@ interface newTransaction{
   Description: string,
   Category: string,
   SplitTag: string,
+  ModelSplit: string
 }
 
 interface splits{
@@ -112,6 +113,7 @@ interface TransactionsState {
   newTransactionError: string;
   categories: string[],
   splitTags: string[],
+  modelSplits: string[],
   friends: friendMap[],
   email: string|null,
   password: string|null,
@@ -149,10 +151,12 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
         Amount: 0,
         Description: "",
         Category: "",
-        SplitTag: ""
+        SplitTag: "",
+        ModelSplit: "",
       },
       categories: [],
       splitTags: [],
+      modelSplits: [],
       newTransactionError: "",
       loading: false,
       splits: [
@@ -322,6 +326,30 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
     }
   }
 
+  fetchModelSplits = async() =>{
+    const url = 'https://karchu.onrender.com/v2/model-split/get';
+    const data = {
+      email: this.state.email,
+      password: this.state.password,
+    };
+
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data ? JSON.stringify(data) : null,
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const data: [] = await response.json();
+      this.setState({modelSplits:data})
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
   fetchFriends = async() => {
     const data = {
       email: this.state.email,
@@ -370,24 +398,38 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       }
     
       this.setState({ openNewDialog: false, newTransactionError: "", loading: true });
-    
-      const req = {
-        amount: this.state.newTransaction.Amount,
-        category: this.state.newTransaction.Category,
-        description: this.state.newTransaction.Description,
-        splitTag: this.state.newTransaction.SplitTag,
-        email: this.state.email,
-        password: this.state.password,
-      };
-    
-      const url = 'https://karchu.onrender.com/v1/transactions';
+      let url = "";
+      let req;
+      if(this.state.newTransaction.ModelSplit === '' ){
+        req = {
+          amount: this.state.newTransaction.Amount,
+          category: this.state.newTransaction.Category,
+          description: this.state.newTransaction.Description,
+          splitTag: this.state.newTransaction.SplitTag,
+          email: this.state.email,
+          password: this.state.password,
+        };
+      
+        url = 'https://karchu.onrender.com/v1/transactions';
+      } else{
+        req = {
+          amount: this.state.newTransaction.Amount,
+          category: this.state.newTransaction.Category,
+          description: this.state.newTransaction.Description,
+          email: this.state.email,
+          password: this.state.password,
+          ModelSplitName: this.state.newTransaction.ModelSplit
+        };
+      
+        url = 'https://karchu.onrender.com/v1/transactions/model';
+      }
       const options: RequestInit = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: req ? JSON.stringify(req) : null,
-      };
+      };  
     
       fetch(url, options)
         .then((response) => response.json())
@@ -413,6 +455,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                 Description: "",
                 Category: "",
                 SplitTag: "",
+                ModelSplit: ""
               },
               loading: false,
             });
@@ -425,6 +468,7 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
       if (this.state.openNewDialog) {
         this.fetchCategories();
         this.fetchSplitTags();
+        this.fetchModelSplits();
       }
     }, [this.state.openNewDialog, this.state.loading]);
 
@@ -479,7 +523,23 @@ class Transactions extends Component<TransactionsProps, TransactionsState> {
                           </>
                         ) : key === "Amount" ?(
                           <Input id={key} value={value} type='number' className="col-span-3" onChange={(e) => handleInputChange(key, e.target.value)} />
-                        ):(
+                        ) : key === "ModelSplit" ?(
+                          <>
+                            <Select onValueChange={(value)=>{handleInputChange(key, value)}}>
+                              <SelectTrigger className="col-span-3">
+                                <SelectValue placeholder="Select a model split" />
+                              </SelectTrigger>
+                              <SelectContent className='p-0 max-h-[250px] overflow-auto'>
+                                <SelectGroup>
+                                  <SelectLabel>Model Splits</SelectLabel>
+                                  {this.state.modelSplits.map((ModelSplit) => (
+                                    <SelectItem value={ModelSplit}>{ModelSplit}</SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </>
+                        ): (
                           <Input id={key} value={value} className="col-span-3" onChange={(e) => handleInputChange(key, e.target.value)} />
                         )
                     }
